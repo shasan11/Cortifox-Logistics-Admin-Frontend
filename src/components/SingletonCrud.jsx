@@ -31,7 +31,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
   const [tableColumns, setColumns] = useState(columnDefs);
 
   const backendurl = `${import.meta.env.VITE_APP_BACKEND_URL}${endpoint}`;
-  const filters = filterurl || "&";
+  const filters = filterurl || "";
 
   const onSelectionChange = useCallback(() => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -57,8 +57,8 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
           <ActionCell onEdit={handleEdit} onDelete={handleDelete} record={params.data} inactiveAction={inactiveAction} />
         ),
         pinned: "left",
-        minWidth: 60,
-        maxWidth: 60,
+        minWidth: 80,
+        maxWidth: 80,
         flex: 1,
       },
     ];
@@ -69,7 +69,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(backendurl + filters + "active=True", {
+      const response = await axios.get(backendurl +"?" +filters + "active=True", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -84,7 +84,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
   const fetchInactiveData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(backendurl + filters + "active=False", {
+      const response = await axios.get(backendurl + "?"+filters + "active=False", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -145,7 +145,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
     validationSchema: validationSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
-      try {
+       
         let response; // Declare a variable to hold the response
     
         if (isEditMode) {
@@ -162,17 +162,18 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
             },
           });
         }
-    
-        getData(response);    
+        try{
+          getData(response);     
+        }
+        finally{
+       
         setModalVisible(false);
         fetchData();
         fetchInactiveData();
         notification.success({
           message: `${isEditMode ? "Updated" : "Created"} successfully`,
         });
-      } catch (error) {
-        notification.error({ message: "Error submitting form" });
-      }
+       }
     },
   });
 

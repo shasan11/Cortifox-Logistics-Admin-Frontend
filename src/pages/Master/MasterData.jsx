@@ -15,7 +15,7 @@ import {
 
 const MasterDataLinks = () => {
   const masterDataItems = [
-    { name: "Ports", path: "/master-data/ports", icon: <DatabaseOutlined /> },
+    { name: "Ports", path: "/master/master-data/port", icon: <DatabaseOutlined /> },
     {
       name: "Branches",
       path: "/master-data/branches",
@@ -23,12 +23,12 @@ const MasterDataLinks = () => {
     },
     {
       name: "Length Unit",
-      path: "/master-data/length-unit",
+      path: "/master/master-data/length-unit",
       icon: <ContainerOutlined />,
     },
     {
       name: "Mass Unit",
-      path: "/master-data/mass-unit",
+      path: "/master/master-data/mass-unit",
       icon: <TagOutlined />,
     },
     {
@@ -98,7 +98,7 @@ const MasterDataLinks = () => {
                 bordered={false}
                 style={{ textAlign: "center",borderRadius:'3px' }}
               >
-                <Link to={item.path}>Go to {item.name} Master Data</Link>
+                <Link to={item.path}>View {item.name}</Link>
               </Card>
             </Col>
           ))}

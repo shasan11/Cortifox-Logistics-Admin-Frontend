@@ -29,11 +29,15 @@ import Shipments from "../pages/Shipments";
 import CreateShipment from "../pages/Shipments/CreateShipment";
 import ShipmentDetails from "../pages/Shipments/ShipmentDetails";
 
+
 //CRM
 import ContactGroup from "../pages/CRM/ContactGroup";
 
 //Master
 import MasterDataLinks from "../pages/Master/MasterData";
+import Port from "../pages/Master/MasterData/Ports";
+import MassUnit from "../pages/Master/MasterData/MassUnit";
+import LengthUnit from "../pages/Master/MasterData/LengthUnit";
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -158,7 +162,7 @@ const items = [
       null,
       "/unique-number"
     ),
-    getItem("Master Data", "sub8", <InboxOutlined />,null,'/master/master/data'),
+    getItem("Master Data", "sub8", <InboxOutlined />,null,'/master/master-data'),
   ]),
   getItem("Docs & Support", "sub9", <FileOutlined />, [
     getItem("Raise a Ticket", "35", <MessageOutlined />, null, "/raise-ticket"),
@@ -231,7 +235,10 @@ const AdminRoutes = () => {
                 element={<ShipmentDetails />}
               />
               <Route path="/crm/contact-group" element={<ContactGroup />} />
-              <Route path="/master/master/data" element={<MasterDataLinks/>} />
+              <Route path="/master/master-data" element={<MasterDataLinks/>} />
+              <Route path="/master/master-data/port" element={<Port/>} />
+              <Route path="/master/master-data/mass-unit" element={<MassUnit/>} />
+              <Route path="/master/master-data/length-unit" element={<LengthUnit/>} />
             </Routes>
           </div>
         </Content>
