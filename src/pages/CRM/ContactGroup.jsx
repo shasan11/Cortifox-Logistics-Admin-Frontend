@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
 import * as Yup from "yup";
-import { Modal, Button, Input, Select, Form, Typography } from 'antd';
+import { Modal, Button, Input, Select, Form, Typography } from "antd";
 import { useFormik } from "formik";
 import SingleTonCrud from "../../components/SingletonCrud";
-
+import useFetchApiData from "../../helper/other/fetchData";
 const { Option } = Select;
 const { Text } = Typography;
 
 // Contact Group Form Modal component
 const ContactGroupFormModal = ({ visible, onCancel, formik, modalTitle }) => {
+  const parent = useFetchApiData("/crm/contacts-groups/");
   return (
     <Modal
       title={modalTitle}
@@ -68,10 +69,11 @@ const ContactGroupFormModal = ({ visible, onCancel, formik, modalTitle }) => {
             onChange={(value) => formik.setFieldValue("under", value)}
             allowClear
           >
-            {/* Options can be populated dynamically or hardcoded */}
-            <Option value="Group A">Group A</Option>
-            <Option value="Group B">Group B</Option>
-            <Option value="Group C">Group C</Option>
+            {parent.map((item) => (
+              <Option value={item.id} key={item.id}>
+                {item.name}
+              </Option>
+            ))}
           </Select>
           {formik.touched.under && formik.errors.under && (
             <Text type="danger">{formik.errors.under}</Text>
@@ -88,8 +90,10 @@ const ContactGroupValidationSchema = Yup.object().shape({
   description: Yup.string().required("Description is required"),
   under: Yup.string().nullable(),
 });
-
+ 
 const ContactGroup = () => {
+  const parent = useFetchApiData("/crm/contacts-groups/");
+
   const forTitle = "Contact Groups";
   const endpoint = "/crm/contacts-groups/";
   const modalTitle = "Contact Group Form";
@@ -100,9 +104,28 @@ const ContactGroup = () => {
   };
 
   const tableColumns = [
-    { headerName: "Name", field: "name", sortable: true, filter: true, flex: 2,checkboxSelection:true,headerCheckboxSelection:true },
-    { headerName: "Description", field: "description", sortable: true, filter: true, flex: 3 },
-    { headerName: "Under", field: "under", sortable: true, filter: true, flex: 2 },
+    {
+      headerName: "Name",
+      field: "name",
+      sortable: true,
+      filter: true,
+      flex: 2,
+      checkboxSelection: true,
+      headerCheckboxSelection: true,
+    },
+    {
+      headerName: "Under",
+      field: "under",
+      valueGetter: (params) => {
+        const matchedItem = parent.filter((item) => item.id === params.data.under)[0];
+        const result = matchedItem ? matchedItem.name : "-"; // Check if matchedItem exists
+        console.log("ValueGetter Result for 'Under':", result); // Log the result
+        return result;
+      },
+      sortable: true,
+      filter: true,
+      flex: 2,
+    },
   ];
 
   return (

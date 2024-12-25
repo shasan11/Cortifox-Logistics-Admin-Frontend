@@ -313,9 +313,9 @@ const AdminRoutes = () => {
       }}
     >
       <Sider
+       collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}
         trigger={null}
-        collapsible
-        collapsed={true}
+        
         className="custom-sidebar"
         style={{
           background: "white",

@@ -442,7 +442,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
             <Spin spinning={loading}>
               {data.length > 0 ? (
                 <div className="ag-theme-material" style={{ height: "auto", borderRadius: "0px" }} >
-                  <AgGridReact ref={gridRef} rowData={filteredData} columnDefs={tableColumns} rowSelection="multiple" pagination={true} paginationPageSize={10} domLayout="autoHeight" animateRows={true} rowClass="ag-grid-table-row" getRowId={(params) => params.data.id} onSelectionChanged={onSelectionChange} />
+                  <AgGridReact ref={gridRef} rowData={filteredData} columnDefs={tableColumns} rowSelection="multiple" pagination={true} paginationPageSize={10} domLayout="autoHeight" animateRows={true} rowClass="ag-grid-table-row" getRowId={(params) => params.data.id} onSelectionChanged={onSelectionChange}  suppressRowClickSelection={true} />
                 </div>
               ) : (
                 <Empty description="No records found" style={{ padding: "100px" }} />

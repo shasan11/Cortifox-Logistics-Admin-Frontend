@@ -4,7 +4,7 @@ import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-//import "./Login.css"; // Create a CSS file for styles
+import "./Login.css"; // Assuming you've created the CSS file
 
 const { Text, Title, Link } = Typography;
 
@@ -12,7 +12,7 @@ const Login = () => {
   const backend_url = import.meta.env.VITE_APP_BACKEND_URL;
 
   const validationSchema = Yup.object({
-    username: Yup.string().required("Email is required"),
+    username: Yup.string().required("Username is required. "),
     password: Yup.string()
       .min(6, "Password must be at least 6 characters")
       .required("Password is required"),
@@ -26,9 +26,10 @@ const Login = () => {
   };
 
   return (
-    <Row align="middle" justify="center" className="login-container">
+    <Row className="login-container">
       <Col xs={24} sm={20} md={12} lg={8}>
         <Card className="login-card" bordered={false}>
+          {/* Header Section */}
           <div className="login-header">
             <div className="login-logo">
               <svg
@@ -45,10 +46,10 @@ const Login = () => {
               </svg>
             </div>
             <Title level={3}>Welcome Back</Title>
-            <Text type="secondary">
-              Welcome back to Application! Please enter your details below to sign in.
-            </Text>
+             
           </div>
+
+          {/* Form Section */}
           <Formik
             initialValues={{ username: "", password: "", remember: true }}
             validationSchema={validationSchema}
@@ -66,7 +67,8 @@ const Login = () => {
             }}
           >
             {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue }) => (
-              <Form layout="vertical" onFinish={handleSubmit} requiredMark="optional">
+              <Form layout="vertical" onFinish={handleSubmit} requiredMark={false}>
+                {/* Username Field */}
                 <Form.Item
                   label="Username"
                   validateStatus={errors.username && touched.username ? "error" : ""}
@@ -75,6 +77,7 @@ const Login = () => {
                   <Input
                     prefix={<MailOutlined />}
                     size="large"
+                    required
                     placeholder="Please enter username"
                     name="username"
                     value={values.username}
@@ -82,8 +85,12 @@ const Login = () => {
                     onBlur={handleBlur}
                   />
                 </Form.Item>
+
+                {/* Password Field */}
                 <Form.Item
+                  style={{marginTop:'1px'}}
                   label="Password"
+                  required
                   validateStatus={errors.password && touched.password ? "error" : ""}
                   help={errors.password && touched.password ? errors.password : ""}
                 >
@@ -97,6 +104,8 @@ const Login = () => {
                     onBlur={handleBlur}
                   />
                 </Form.Item>
+
+                {/* Remember Me & Forgot Password */}
                 <div className="login-form-footer">
                   <Checkbox
                     checked={values.remember}
@@ -108,11 +117,15 @@ const Login = () => {
                     Forgot password?
                   </Link>
                 </div>
+
+                {/* Submit Button */}
                 <Form.Item>
                   <Button type="primary" block htmlType="submit" size="large">
                     Log in
                   </Button>
                 </Form.Item>
+
+                {/* Footer Section */}
                 <div className="login-footer">
                   <Text type="secondary">Don't have an account?</Text>{" "}
                   <Link href="#">Sign up now</Link>
