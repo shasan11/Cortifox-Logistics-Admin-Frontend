@@ -91,7 +91,7 @@ const ContactGroupValidationSchema = Yup.object().shape({
 
 const ContactGroup = () => {
   const forTitle = "Contact Groups";
-  const endpoint = "/crm/contacts-groups/?";
+  const endpoint = "/crm/contacts-groups/";
   const modalTitle = "Contact Group Form";
   const initialFormValues = {
     name: "",
@@ -100,7 +100,7 @@ const ContactGroup = () => {
   };
 
   const tableColumns = [
-    { headerName: "Name", field: "name", sortable: true, filter: true, flex: 2 },
+    { headerName: "Name", field: "name", sortable: true, filter: true, flex: 2,checkboxSelection:true,headerCheckboxSelection:true },
     { headerName: "Description", field: "description", sortable: true, filter: true, flex: 3 },
     { headerName: "Under", field: "under", sortable: true, filter: true, flex: 2 },
   ];

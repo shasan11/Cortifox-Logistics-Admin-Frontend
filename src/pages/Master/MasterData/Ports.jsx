@@ -19,6 +19,7 @@ const PortFormModal = ({ visible, onCancel, formik, modalTitle }) => {
         <Button key="back" onClick={onCancel}>
           Cancel
         </Button>,
+        
         <Button key="submit" type="primary" onClick={formik.handleSubmit}>
           Submit
         </Button>,
@@ -211,9 +212,8 @@ const Port = () => {
   };
 
   const tableColumns = [
-    { headerName: "Name", field: "name", sortable: true, filter: true, flex: 2 },
-    { headerName: "Symbol", field: "symbol", sortable: true, filter: true, flex: 2 },
-    { headerName: "Active Status", field: "active_status", sortable: true, filter: true, flex: 1 },
+    { headerName: "Name", field: "name", sortable: true, flex: 2,checkboxSelection:true,headerCheckboxSelection:true },
+    { headerName: "Symbol", field: "symbol", sortable: true, flex: 2 },
     { headerName: "Country", field: "country", sortable: true, filter: true, flex: 2 },
     { headerName: "Region", field: "region", sortable: true, filter: true, flex: 2 },
     { headerName: "City", field: "city", sortable: true, filter: true, flex: 2 },

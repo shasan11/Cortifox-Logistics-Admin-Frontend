@@ -19,16 +19,26 @@ import {
   InfoCircleOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  BellOutlined,
+  CalculatorOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, theme } from "antd";
+import { Button, Layout, Menu, theme,Input,Badge,Dropdown,Avatar,Row } from "antd";
 import { Link, Routes, Route } from "react-router-dom";
+import logo from '../assets/logo-white.png'
+
+
+//Dashboard
+import Dashboard from "../pages/Dashboard";
 
 //Shipment & Operations
 import Shipments from "../pages/Shipments";
 import CreateShipment from "../pages/Shipments/CreateShipment";
 import ShipmentDetails from "../pages/Shipments/ShipmentDetails";
 
+
+//Genral Ledger
+import GeneralLedger from "../pages/Accounting/GeneralLedger";
 
 //CRM
 import ContactGroup from "../pages/CRM/ContactGroup";
@@ -169,81 +179,193 @@ const items = [
     getItem("About", "36", <InfoCircleOutlined />, null, "/about"),
   ]),
 ];
+const profileMenu = (
+  <Menu
+    items={[
+      {
+        key: "1",
+        label: <span style={{ color: "#000" }}>Profile</span>,
+      },
+      {
+        key: "2",
+        label: <span style={{ color: "#000" }}>Settings</span>,
+      },
+      {
+        key: "3",
+        label: <span style={{ color: "#000" }}>Logout</span>,
+      },
+    ]}
+  />
+);
 
 const AdminRoutes = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
     <Layout
-      className="layout-main"
+    className="layout-main"
+    style={{
+      height: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      background: "#f0f0f0",
+    }}
+  >
+    {/* Navbar */}
+    <Header
+  style={{
+    padding: 0,
+    background: "#030852",
+    color: "white",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",  // Ensures the elements are spread across the header
+  }}
+>
+  {/* Left Section: Logo */}
+  <div
+    style={{
+      marginLeft: "16px",
+      color: "white",
+      fontSize: "20px",
+      fontWeight: "bold",
+    }}
+  >
+   <img src={logo} style={{width:'160px'}}/>
+  </div>
+
+  
+
+  {/* Middle Section: Search Field */}
+  <div style={{ flex: 1, display: "flex", justifyContent: "center" }} className='search-input'>
+    <Input
+      placeholder="Search..."
+      style={{
+        maxWidth: "70%",
+        padding:'10px',
+        backgroundColor: "#061178",
+        color: "white",
+        borderRadius:'3px',
+        
+      }}
+      allowClear
+      prefix={<SearchOutlined style={{ fontSize: "18px", color: "white" }}/>}
+      suffix={<>Ctrl+/</>}
+      bordered={false}
+      inputStyle={{
+        color: "white",
+      }}
+    />
+  </div>
+
+  {/* Right Section: Notifications, Calculator, Profile */}
+  <div style={{ display: "flex", alignItems: "center" }}>
+
+  <Button
+      icon={<CalculatorOutlined style={{ color: "white" }} />}
+      style={{
+        margin: "0 8px",
+        color: "white",
+        background: "rgba(255, 255, 255, 0.2)",
+        border: "none",
+      }}
+    >
+      Shipment Calculator
+    </Button>
+    {/* Notification Icon */}
+    <Badge count={5}>
+      <Button
+        shape="circle"
+        icon={<BellOutlined style={{ color: "white" }} />}
+        style={{
+          backgroundColor: "transparent",
+          border: "none",
+          color: "white",
+        }}
+      />
+    </Badge>
+
+    {/* Shipment Calculator */}
+     
+
+    {/* Profile Dropdown */}
+    <Dropdown overlay={profileMenu} placement="bottomRight">
+      <Avatar
+        style={{
+          margin: "0 16px",
+          backgroundColor: "#1890ff",
+          cursor: "pointer",
+        }}
+        icon={<UserOutlined />}
+      />
+    </Dropdown>
+  </div>
+</Header>
+
+    {/* Sider and Content in column layout */}
+    <Layout
       style={{
         height: "100vh",
+        flex: 1,
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
         background: "#f0f0f0",
       }}
     >
-      {/* Navbar */}
-      <Header style={{ padding: 0, background: "#030852", color: "white" }}>
-        <Button
-          type="text"
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={() => setCollapsed(!collapsed)}
-          style={{ fontSize: "16px", width: 64, height: 64, color: "white" }}
-        />
-      </Header>
-
-      {/* Sider and Content in column layout */}
-      <Layout
+      <Sider
+        trigger={null}
+        collapsible
+        collapsed={true}
+        className="custom-sidebar"
         style={{
-          height: "100vh",
-          flex: 1,
-          display: "flex",
-          flexDirection: "row",
-          background: "#f0f0f0",
+          background: "white",
         }}
       >
-        <Sider
-          trigger={null}
-          collapsible
-          collapsed={collapsed}
-          style={{ background: "white" }}
-        >
-          <Menu
-            theme="light"
-            mode="inline"
-            defaultSelectedKeys={["1"]}
-            items={items}
-          />
-        </Sider>
-        <Content
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div style={{ flex: 1 }}>
-            <Routes>
-              <Route path="/operations/shipments/" element={<Shipments />} />
-              <Route
-                path="/operations/shipments/create/:type/"
-                element={<CreateShipment />}
-              />
-              <Route
-                path="/operations/shipments/details/:shipment_no/"
-                element={<ShipmentDetails />}
-              />
-              <Route path="/crm/contact-group" element={<ContactGroup />} />
-              <Route path="/master/master-data" element={<MasterDataLinks/>} />
-              <Route path="/master/master-data/port" element={<Port/>} />
-              <Route path="/master/master-data/mass-unit" element={<MassUnit/>} />
-              <Route path="/master/master-data/length-unit" element={<LengthUnit/>} />
-            </Routes>
-          </div>
-        </Content>
-      </Layout>
+        <Menu
+          theme="light"
+          mode="inline"
+          defaultSelectedKeys={["1"]}
+          items={items}
+        />
+      </Sider>
+      <Content
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "auto",
+        }}
+      >
+        <div style={{ flex: 1, padding: "0px" }}>
+          <Routes>
+          <Route path="/" element={<Dashboard />} />
+
+
+          <Route path="/general-accounting/general-ledger" element={<GeneralLedger/>} />
+            <Route path="/operations/shipments/" element={<Shipments />} />
+            <Route
+              path="/operations/shipments/create/:type/"
+              element={<CreateShipment />}
+            />
+            <Route
+              path="/operations/shipments/details/:shipment_no/"
+              element={<ShipmentDetails />}
+            />
+            <Route path="/crm/contact-group" element={<ContactGroup />} />
+            <Route path="/master/master-data" element={<MasterDataLinks />} />
+            <Route path="/master/master-data/port" element={<Port />} />
+            <Route path="/master/master-data/mass-unit" element={<MassUnit />} />
+            <Route
+              path="/master/master-data/length-unit"
+              element={<LengthUnit />}
+            />
+          </Routes>
+        </div>
+      </Content>
     </Layout>
+  </Layout>
+  
+
   );
 };
 

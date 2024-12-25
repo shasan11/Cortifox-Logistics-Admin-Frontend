@@ -21,3 +21,13 @@ font-family: 'Inter', sans-serif !important; /* Set Poppins as the default font 
 .layout-main{
     height: 100vh;
 }
+
+.search-input input::placeholder {
+    color: lightgray;
+    opacity: 1;
+    font-size: 14px;
+  }
+  
+  .search-input input:focus::placeholder {
+    color: white;
+  }

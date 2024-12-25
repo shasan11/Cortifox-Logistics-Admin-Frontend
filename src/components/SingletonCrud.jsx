@@ -16,20 +16,18 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
   const inactivegridRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState([]);
+  const dataref=useRef([])
   const [inactivedata, setinactiveData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedInactiveRows, setInactiveSelectedRows] = useState([]);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [filteredData,setFilteredData]=useState([])
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
-  const [drawerVisible, setDrawerVisible] = useState({
-    history: false,
-    inactive: false,
-  });
-  const [tableColumns, setColumns] = useState(columnDefs);
+  const [drawerVisible, setDrawerVisible] = useState({ history: false, inactive: false, });
 
+  const [tableColumns, setColumns] = useState(columnDefs);
   const backendurl = `${import.meta.env.VITE_APP_BACKEND_URL}${endpoint}`;
   const filters = filterurl || "";
 
@@ -45,14 +43,25 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
     setInactiveSelectedRows(selectedIds);
   }, []);
 
-  // Add action column dynamically
+  useEffect(() => {
+    const updatedFilteredData = data.filter((record) =>
+      Object.values(record).some((value) =>
+        String(value).toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+    setFilteredData(updatedFilteredData);
+  }, [data, searchTerm]); 
+
+
   useEffect(() => {
     const updatedColumnDefs = [
       ...columnDefs,
       {
         suppressRowClickSelection: true,
-        headerName: "Action",
+        headerName: "",
+        suppressMenu: true, // Disable the menu for this column
         field: "action",
+        sortable: false,
         cellRenderer: (params) => (
           <ActionCell onEdit={handleEdit} onDelete={handleDelete} record={params.data} inactiveAction={inactiveAction} />
         ),
@@ -67,6 +76,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
 
   // Fetch data from backend
   const fetchData = async () => {
+    console.log("Fetch Data Triggered");
     setLoading(true);
     try {
       const response = await axios.get(backendurl +"?" +filters + "active=True", {
@@ -75,6 +85,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
         },
       });
       setData(response.data);
+      dataref.current=response.data
     } catch (error) {
       notification.error({ message: "Error fetching data" });
     } finally {
@@ -103,6 +114,9 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
     fetchInactiveData();
   }, [backendurl]);
 
+  
+ 
+
   // Add new record
   const handleAdd = () => {
     console.log("Function triggerd");
@@ -114,10 +128,14 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
 
   // Edit existing record
   const handleEdit = (record) => {
+    const formdata=dataref.current.filter((item)=>item.id==record.id)[0]||record
+    console.log("Real Form Data",formdata)
+    console.log('dataref',dataref.current)
+    console.log(record);
+    formik.setValues(formdata);
     setEditingRecord(record);
     setIsEditMode(true);
-    setModalVisible(true);
-    formik.setValues(record);
+    setModalVisible(true);     
   };
 
   // Delete record with confirmation
@@ -166,7 +184,6 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
           getData(response);     
         }
         finally{
-       
         setModalVisible(false);
         fetchData();
         fetchInactiveData();
@@ -177,12 +194,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
     },
   });
 
-  // Filter data based on search term
-  const filteredData = data.filter((record) =>
-    Object.values(record).some((value) =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+ 
 
   // Export grid data to Excel
   const onBtExport = useCallback(() => {
@@ -403,8 +415,8 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
                 {/* Selected Actions Row */}
               </>
             )}
-            <Row justify="space-between" align="middle" wrap style={{ borderBottom: "1px solid #d9d9d9s", background: "#FFF" }} >
-              <Input size="large" placeholder="Search records..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} prefix={<SearchOutlined />} style={{ flex: 1, borderRadius: "0px", height: "100%", border: "none",padding:"15px" }} />
+            <Row justify="space-between" align="middle" wrap style={{ borderBottom: "1px solid #d9d9d9", borderRight: "1px solid #d9d9d9",background: "#FFF" }} >
+              <Input size="large" placeholder="Search records..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} prefix={<SearchOutlined />} style={{ flex: 1, borderRadius: "0px", height: "100%", border: "none",padding:"15px",borderRight: "1px solid #d9d9d9" }} />
               <Space style={{ paddingInline: "20px" }}>
                  
                 <Button icon={<MenuOutlined />} type="text" />
@@ -471,7 +483,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
                     className="ag-theme-material"
                     style={{ height: "auto", borderRadius: "0px" }}
                   >
-                    <AgGridReact ref={inactivegridRef} rowData={inactivedata} columnDefs={columnDefs} onSelectionChanged={onInactiveSelectionChange} domLayout="autoHeight" rowSelection="multiple" pagination={true} paginationPageSize={10} />
+                    <AgGridReact ref={inactivegridRef} rowData={inactivedata} columnDefs={columnDefs} onSelectionChanged={onInactiveSelectionChange} domLayout="autoHeight" rowSelection="multiple" pagination={true} paginationPageSize={10} suppressClickEdit />
                   </div>
                 ) : (
                   <Empty description="No records found" style={{ padding: "100px" }} />

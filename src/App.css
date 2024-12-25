@@ -20,3 +20,50 @@
  body{
    background-color: "#f0f0f0";
  }
+
+ .custom-sidebar {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.custom-sidebar:hover {
+  overflow: auto;
+}
+
+.custom-sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-sidebar::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.custom-sidebar::-webkit-scrollbar-thumb {
+  background: #b3b3b3;
+  border-radius: 4px;
+}
+
+.custom-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #8c8c8c;
+}
+
+
+.card-1{
+  height: 120px;
+  border-radius: 3px;
+  margin-bottom: 15px;
+}
+
+.card-2{
+  height: 320px;
+  border-radius: 3px;
+  margin-bottom: 20px;
+}
+
+input.ant-input {
+  border: 2px solid #ddd; /* Light grey border */
+  border-radius: 5px;    /* Rounded corners */
+  padding: 8px;          /* Inner spacing */
+  font-size: 14px;       /* Text size */
+}
