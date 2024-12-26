@@ -48,6 +48,12 @@ import MasterDataLinks from "../pages/Master/MasterData";
 import Port from "../pages/Master/MasterData/Ports";
 import MassUnit from "../pages/Master/MasterData/MassUnit";
 import LengthUnit from "../pages/Master/MasterData/LengthUnit";
+import PackageType from "../pages/Master/MasterData/PackagesType";
+import BranchCRUD from "../pages/Master/MasterData/Branches";
+import CurrencyManagement from "../pages/Master/MasterData/Currency";
+import PaymentMethod from "../pages/Master/MasterData/PaymentMode";
+import DeliveryTypeManagement from "../pages/Master/MasterData/DeliveryType";
+import ShipmentSubStatus from "../pages/Master/MasterData/ShipmentSubStatus";
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -359,6 +365,12 @@ const AdminRoutes = () => {
               path="/master/master-data/length-unit"
               element={<LengthUnit />}
             />
+             <Route path="/master/master-data/packages-type" element={<PackageType/>} />
+             <Route path="/master/master-data/branch" element={<BranchCRUD/>} />
+             <Route path="/master/master-data/currency" element={<CurrencyManagement/>} />
+             <Route path="/master/master-data/payment-method" element={<PaymentMethod/>} />
+             <Route path="/master/master-data/delivery-type" element={<DeliveryTypeManagement/>} />
+             <Route path="/master/master-data/shipment-sub-type" element={<ShipmentSubStatus/>} />
           </Routes>
         </div>
       </Content>

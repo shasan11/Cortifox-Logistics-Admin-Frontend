@@ -69,11 +69,14 @@ const ContactGroupFormModal = ({ visible, onCancel, formik, modalTitle }) => {
             onChange={(value) => formik.setFieldValue("under", value)}
             allowClear
           >
-            {parent.map((item) => (
-              <Option value={item.id} key={item.id}>
-                {item.name}
-              </Option>
-            ))}
+            {parent?.map(
+              (item) =>
+                item.id !== formik.values.id && ( // Skip the option if the value matches formik.values.under
+                  <Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Option>
+                )
+            )}
           </Select>
           {formik.touched.under && formik.errors.under && (
             <Text type="danger">{formik.errors.under}</Text>
@@ -90,7 +93,7 @@ const ContactGroupValidationSchema = Yup.object().shape({
   description: Yup.string().required("Description is required"),
   under: Yup.string().nullable(),
 });
- 
+
 const ContactGroup = () => {
   const parent = useFetchApiData("/crm/contacts-groups/");
 
@@ -117,8 +120,10 @@ const ContactGroup = () => {
       headerName: "Under",
       field: "under",
       valueGetter: (params) => {
-        const matchedItem = parent.filter((item) => item.id === params.data.under)[0];
-        const result = matchedItem ? matchedItem.name : "-"; // Check if matchedItem exists
+        const matchedItem = parent.filter(
+          (item) => item.id === params.data.under
+        )[0];
+        const result = matchedItem ? matchedItem.name : ""; // Check if matchedItem exists
         console.log("ValueGetter Result for 'Under':", result); // Log the result
         return result;
       },

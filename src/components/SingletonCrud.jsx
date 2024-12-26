@@ -29,7 +29,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
 
   const [tableColumns, setColumns] = useState(columnDefs);
   const backendurl = `${import.meta.env.VITE_APP_BACKEND_URL}${endpoint}`;
-  const filters = filterurl || "";
+  const filters = filterurl+"&"|| "";
 
   const onSelectionChange = useCallback(() => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -434,7 +434,6 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
               <Row justify="space-between" style={{ padding: "10px 0", backgroundColor: "#e6f4ff" }} >
                 <Button type="text" style={{ fontWeight: "600", color: "#001d66" }} onClick={onBtExportSelected} > Export Selected </Button>
                 <Button type="text" style={{ fontWeight: "600", color: "#820014" }} onClick={onBtnBulkInactive} > Mark Inactive </Button>
-                <Button type="text" style={{ fontWeight: "600", color: "#820014" }} onClick={onBtnBulkDelete} > Delete </Button>
                 <Button type="text" style={{ fontWeight: "600", color: "#820014" }} onClick={onBtExport} > Export All </Button>
                 <Button type="text" style={{ fontWeight: "600", color: "#001d66" }} onClick={onBtClearSelection} > Clear Selection </Button>
               </Row>

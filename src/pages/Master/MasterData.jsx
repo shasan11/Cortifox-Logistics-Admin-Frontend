@@ -18,7 +18,7 @@ const MasterDataLinks = () => {
     { name: "Ports", path: "/master/master-data/port", icon: <DatabaseOutlined /> },
     {
       name: "Branches",
-      path: "/master-data/branches",
+      path: "/master/master-data/branch",
       icon: <BranchesOutlined />,
     },
     {
@@ -38,27 +38,27 @@ const MasterDataLinks = () => {
     },
     {
       name: "Packages Types",
-      path: "/master-data/packages-types",
+      path: "/master/master-data/packages-type",
       icon: <AppstoreAddOutlined />,
     },
     {
       name: "Currencies",
-      path: "/master-data/currencies",
+      path: "/master/master-data/currency",
       icon: <DollarCircleOutlined />,
     },
     {
       name: "Payment Mode",
-      path: "/master-data/payment-mode",
+      path: "/master/master-data/payment-method",
       icon: <CreditCardOutlined />,
     },
     {
       name: "Delivery Type",
-      path: "/master-data/delivery-type",
+      path: "/master/master-data/delivery-type",
       icon: <BuildOutlined />,
     },
     {
       name: "Shipment Sub Type",
-      path: "/master-data/shipment-sub-type",
+      path: "/master/master-data/shipment-sub-type",
       icon: <FileSearchOutlined />,
     },
   ];

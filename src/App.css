@@ -68,4 +68,11 @@ input.ant-input {
   font-size: 14px;       /* Text size */
 }
 
- 
+
+.ag-theme-material .ag-checkbox-input-wrapper.ag-checked::after {
+  color: #0e387a !important;
+}
+
+.ag-header-cell-text{
+  font-size: 16px !important;
+}
