@@ -7,11 +7,22 @@ import "ag-grid-community/styles/ag-theme-material.css";
 import "ag-grid-enterprise";
 import { EditOutlined, DeleteOutlined, PlusCircleOutlined, ExportOutlined, SearchOutlined, MoreOutlined, RocketOutlined, MenuOutlined, EyeInvisibleOutlined, } from "@ant-design/icons";
 import { useFormik } from "formik";
+import { VscLaw } from "react-icons/vsc";
 
-const ActionCell = ({ onEdit, onDelete, record, inactiveAction, custom_actions, }) => (   
-    <Tooltip title="Edit"> {" "} <Button icon={<EditOutlined />} onClick={() => onEdit(record)} type="default" />{" "} </Tooltip> );
+const ActionCell = ({ onEdit, onDelete, record, inactiveAction, custom_actions, is_delete}) => (  
+  <> 
+    <Tooltip title="Edit"> {" "} <Button icon={<EditOutlined />} onClick={() => onEdit(record)} type="default" />{" "} </Tooltip>
+    {is_delete && (
+  <Tooltip title="Edit">
+    {" "}
+    <Button icon={<DeleteOutlined />} onClick={() => onDelete(record)} type="default" />
+    {" "}
+  </Tooltip>
+)}
 
-const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filterurl, initialFormValues, columnDefs, forTitle, modalTitle, no_title, permission_level, render_type, no_header, inactiveAction,getData }) => {
+    </>  );
+
+const SingleTonCrud = ({ endpoint, formModal: FormModal,deleteAct, validationSchema, filterurl, initialFormValues, columnDefs, forTitle, modalTitle, no_title, permission_level, render_type, no_header, inactiveAction,getData}) => {
   const gridRef = useRef();
   const inactivegridRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
@@ -63,7 +74,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
         field: "action",
         sortable: false,
         cellRenderer: (params) => (
-          <ActionCell onEdit={handleEdit} onDelete={handleDelete} record={params.data} inactiveAction={inactiveAction} />
+          <ActionCell onEdit={handleEdit} onDelete={handleDelete} record={params.data} inactiveAction={inactiveAction} is_delete={deleteAct} />
         ),
         pinned: "left",
         minWidth: 80,
@@ -76,7 +87,7 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
 
   // Fetch data from backend
   const fetchData = async () => {
-    console.log("Fetch Data Triggered");
+    console.log("Fetch Data Triggered",backendurl);
     setLoading(true);
     try {
       const response = await axios.get(backendurl +"?" +filters + "active=True", {
@@ -156,14 +167,30 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
       });
     }
   };
-
+  const handleBulkDelete = async () => {
+    try {
+      await axios.delete(`${backendurl}`,selectedRows, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+      fetchData();
+      fetchInactiveData();
+      notification.success({ message: `${forTitle} deleted successfully` });
+    } catch (error) {
+      notification.error({
+        message:
+          "The record cannot be deleted because it is currently in use by the application.",
+      });
+    }
+  };
   // Formik setup for form handling
   const formik = useFormik({
     initialValues: initialFormValues,
     validationSchema: validationSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
-       
+        console.warn("Values to be processed in SingleTonCrud",VscLaw)
         let response; // Declare a variable to hold the response
     
         if (isEditMode) {
@@ -373,7 +400,10 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
   const menu = (
     <Menu>
       <Menu.Item key="export" icon={<ExportOutlined />} onClick={onBtExport}> {" "} Export All{" "} </Menu.Item>
-      <Menu.Item key="viewInactive" icon={<ExportOutlined />} onClick={() => toggleDrawer("inactive", true)} > {" "} View Inactive{" "} </Menu.Item>
+      {inactiveAction&&(
+        <Menu.Item key="viewInactive" icon={<ExportOutlined />} onClick={() => toggleDrawer("inactive", true)} > {" "} View Inactive{" "} </Menu.Item>
+      )}
+       
     </Menu>
   );
 
@@ -434,6 +464,10 @@ const SingleTonCrud = ({ endpoint, formModal: FormModal, validationSchema, filte
               <Row justify="space-between" style={{ padding: "10px 0", backgroundColor: "#e6f4ff" }} >
                 <Button type="text" style={{ fontWeight: "600", color: "#001d66" }} onClick={onBtExportSelected} > Export Selected </Button>
                 <Button type="text" style={{ fontWeight: "600", color: "#820014" }} onClick={onBtnBulkInactive} > Mark Inactive </Button>
+                {deleteAct&&(
+                    <Button type="text" style={{ fontWeight: "600", color: "#820014" }} onClick={handleBulkDelete} > Delete </Button>
+
+                )}
                 <Button type="text" style={{ fontWeight: "600", color: "#820014" }} onClick={onBtExport} > Export All </Button>
                 <Button type="text" style={{ fontWeight: "600", color: "#001d66" }} onClick={onBtClearSelection} > Clear Selection </Button>
               </Row>

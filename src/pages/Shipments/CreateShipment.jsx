@@ -1,5 +1,6 @@
 import { Formik } from "formik";
 import {
+  Alert,
   Form,
   Grid,
   Input,
@@ -13,6 +14,7 @@ import {
   Typography,
   Button,
   message,
+  Tabs,
 } from "antd";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { useFormik } from "formik";
@@ -27,12 +29,18 @@ import {
   incoterms,
   payment_choices,
   priorityOptions,
+  newShipmentInitialvalues,
+  newShipmentValidationSchema,
 } from "./ShipmentMasterValues";
 import useFetchApiData from "../../helper/other/fetchData";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+const { TabPane } = Tabs;
 
 const CreateShipment = () => {
   const { type } = useParams();
+  const navigate = useNavigate();
   document.title = `Create Shipment - ${
     import.meta.env.VITE_APP_APPLICATION_NAME
   }`;
@@ -51,13 +59,15 @@ const CreateShipment = () => {
   const landcarrier = useFetchApiData(
     "/parties/vendors/?active=true&type=&vendor_class=Carrier&is_land=true"
   );
+  const consignee = useFetchApiData("/clients/consingee/");
 
   return (
     <>
       <Formik
-        initialValues={initialValues}
-        validationSchema={shipmentValidationSchema}
+        initialValues={newShipmentInitialvalues}
+        validationSchema={newShipmentValidationSchema}
         onSubmit={(values) => {
+          console.log("Trigger");
           values.shipment_type = type;
           console.log(values);
           axios
@@ -74,6 +84,7 @@ const CreateShipment = () => {
             )
             .then((response) => {
               message.success("Shipment Created Successfully");
+              navigate(`/operations/shipments/details/${response.data.id}`);
             })
             .catch((error) => {
               message.error(error.message);
@@ -95,21 +106,32 @@ const CreateShipment = () => {
             requiredMark="optional"
           >
             {console.log(errors)}
-            <Row justify="space-between" style={{position:"sticky"}}>
+            <Row
+              justify="space-between"
+              align="middle"
+              wrap
+              style={{
+                background: "#fafafa",
+                borderBottom: "1px solid #d9d9d9",
+                padding: "15px 25px",
+                position: "sticky",
+              }}
+            >
               <Title level={4}>Create Shipment </Title>
               <Form.Item style={{ marginBottom: "0px" }}>
-                  <Button
-                    block="true"
-                    type="primary"
-                    htmlType="submit"
-                    size="large"
-                  >
-                    Save
-                  </Button>
-                </Form.Item>
-
+                {" "}
+                <Button
+                  block="true"
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                >
+                  {" "}
+                  Save{" "}
+                </Button>{" "}
+              </Form.Item>
             </Row>
-            <Collapse defaultActiveKey={["1"]} className="mt-3">
+            <Collapse defaultActiveKey={["1"]} className="m-3">
               <Panel header="GENERAL INFORMATION" key="1">
                 <Row justify="space-between">
                   {/* Transport Mode */}
@@ -195,6 +217,7 @@ const CreateShipment = () => {
                   <Form.Item
                     label="Movement Type"
                     required
+                    className="w-25"
                     layout="vertical"
                     validateStatus={
                       errors.movement_type && touched.movement_type
@@ -208,6 +231,7 @@ const CreateShipment = () => {
                     }
                   >
                     <Select
+                      size="large"
                       options={movementOption}
                       placeholder="Select Movement Type"
                       onChange={(value) =>
@@ -220,6 +244,8 @@ const CreateShipment = () => {
                   </Form.Item>
 
                   {/* RORO */}
+                </Row>
+                <Row>
                   <Form.Item
                     label="RORO"
                     required
@@ -241,6 +267,7 @@ const CreateShipment = () => {
 
                   {/* Third Party */}
                   <Form.Item
+                    style={{ marginLeft: "35px" }}
                     label="Third Party"
                     required
                     layout="vertical"
@@ -266,9 +293,9 @@ const CreateShipment = () => {
                   </Form.Item>
                 </Row>
                 <Divider />
-                <Row className="w-100" gutter={30}>
+                <Row className="w-100">
                   {/* Origin Section */}
-                  <Col xxl="12">
+                  <Col xl={10} className="p-2">
                     <p className="form-sub-divider">
                       <IoInformationCircleOutline /> Origin
                     </p>
@@ -290,6 +317,7 @@ const CreateShipment = () => {
                       }
                     >
                       <Select
+                        size="large"
                         placeholder="Select Origin Handling Agency"
                         onChange={(value) =>
                           setFieldValue("port_handling_agent_origin", value)
@@ -319,6 +347,7 @@ const CreateShipment = () => {
                       }
                     >
                       <Select
+                        size="large"
                         placeholder="Select Port of Origin"
                         onChange={(value) =>
                           setFieldValue("port_origin", value)
@@ -352,7 +381,9 @@ const CreateShipment = () => {
                       }
                     >
                       <Input
+                        size="large"
                         type="date"
+                        placeholder="Enter Scheduled Date "
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.scheduled_start_date}
@@ -362,7 +393,7 @@ const CreateShipment = () => {
                   </Col>
 
                   {/* Destination Section */}
-                  <Col xxl="12">
+                  <Col xl={10} className="p-2 ml-5">
                     <p className="form-sub-divider">
                       <IoInformationCircleOutline /> Destination
                     </p>
@@ -384,6 +415,7 @@ const CreateShipment = () => {
                       }
                     >
                       <Select
+                        size="large"
                         placeholder="Select Destination Handling Agency"
                         onChange={(value) =>
                           setFieldValue(
@@ -418,6 +450,7 @@ const CreateShipment = () => {
                       }
                     >
                       <Select
+                        size="large"
                         placeholder="Select Port of Destination"
                         onChange={(value) =>
                           setFieldValue("port_destination", value)
@@ -449,6 +482,7 @@ const CreateShipment = () => {
                       }
                     >
                       <Input
+                        size="large"
                         type="date"
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -463,6 +497,7 @@ const CreateShipment = () => {
                   <Col xl={12}>
                     <Form.Item label="Shipper" required layout="vertical">
                       <Select
+                        size="large"
                         placeholder="Select the Shipper"
                         onChange={(value) => setFieldValue("shipper", value)}
                         onBlur={handleBlur}
@@ -489,6 +524,7 @@ const CreateShipment = () => {
                       }
                     >
                       <Select
+                        size="large"
                         placeholder="Select the Client"
                         onChange={(value) => setFieldValue("client", value)}
                         onBlur={handleBlur}
@@ -503,9 +539,58 @@ const CreateShipment = () => {
                       </Select>
                     </Form.Item>
                   </Col>
-
-                  <Col xl={12}>
+                  <Col xl={8}>
                     <Form.Item
+                      label="Consignee"
+                      required
+                      layout="vertical"
+                      validateStatus={
+                        errors.consignee && touched.consignee ? "error" : ""
+                      }
+                      help={
+                        errors.consignee && touched.consignee
+                          ? errors.consignee
+                          : ""
+                      }
+                    >
+                      {values.client ? (
+                        consignee.filter(
+                          (item) => item.client === values.client
+                        ).length > 0 ? (
+                          <Select
+                            size="large"
+                            placeholder="Please Select Consignee"
+                            onChange={(value) =>
+                              setFieldValue("consignee", value)
+                            }
+                            onBlur={handleBlur}
+                            value={values.consignee}
+                            name="consignee"
+                          >
+                            {consignee
+                              .filter((item) => item.client === values.client)
+                              .map((item) => (
+                                <Select.Option key={item.id} value={item.id}>
+                                  {item.name}
+                                </Select.Option>
+                              ))}
+                          </Select>
+                        ) : (
+                          <span style={{ color: "red" }}>
+                            No consignee found
+                          </span>
+                        )
+                      ) : (
+                        <span style={{ color: "red" }}>
+                          Please Select the Client
+                        </span>
+                      )}
+                    </Form.Item>
+                  </Col>
+
+                  <Col xl={8}>
+                    <Form.Item
+                      size="large"
                       label="IncoTerms"
                       required
                       layout="vertical"
@@ -524,12 +609,13 @@ const CreateShipment = () => {
                         onChange={(value) => setFieldValue("inco_terms", value)}
                         onBlur={handleBlur}
                         value={values.inco_terms}
+                        size="large"
                         name="inco_terms"
                       />
                     </Form.Item>
                   </Col>
 
-                  <Col xl={12}>
+                  <Col xl={8}>
                     <Form.Item
                       label="Priority"
                       required
@@ -543,14 +629,20 @@ const CreateShipment = () => {
                           : ""
                       }
                     >
-                      <Select
-                        options={priorityOptions}
-                        placeholder="Please Select Priority"
-                        onChange={(value) => setFieldValue("priority", value)}
+                      <Radio.Group
+                        onChange={(e) =>
+                          setFieldValue("priority", e.target.value)
+                        }
                         onBlur={handleBlur}
                         value={values.priority}
                         name="priority"
-                      />
+                      >
+                        {priorityOptions.map((option) => (
+                          <Radio key={option.value} value={option.value}>
+                            {option.label}
+                          </Radio>
+                        ))}
+                      </Radio.Group>
                     </Form.Item>
                   </Col>
                 </Row>
@@ -577,6 +669,7 @@ const CreateShipment = () => {
                       }
                     >
                       <Select
+                        size="large"
                         placeholder="Please Select Currency"
                         onChange={(value) => setFieldValue("currency", value)}
                         onBlur={handleBlur}
@@ -610,6 +703,7 @@ const CreateShipment = () => {
                     >
                       <Input
                         type="number"
+                        placeholder="Please Enter Total Amount"
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.total_amount}
@@ -634,6 +728,7 @@ const CreateShipment = () => {
                     >
                       <Input
                         type="number"
+                        placeholder="Please Enter Paid Amount"
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.paid_amount}
@@ -673,199 +768,417 @@ const CreateShipment = () => {
                   <Col xl={8}>
                     <Form.Item label="Complementary" required layout="vertical">
                       <Switch
-                        checked={values.is_complementary}
+                        checked={values.complementary}
                         onChange={(checked) =>
-                          setFieldValue("is_complementary", checked)
+                          setFieldValue("complementary", checked)
                         }
                         onBlur={handleBlur}
-                        name="is_complementary"
+                        name="complementary"
                       />
                     </Form.Item>
                   </Col>
+
+                  
+                </Row>
+                <Row gutter={[16.16]} className="p-3">
+                {values.transport_mode === "AIR" && (
+                    <>
+                      <div className="row">
+                        <p className="form-sub-divider">
+                          <IoInformationCircleOutline /> Air Freight Specific
+                        </p>
+                        <div className="col-lg-6">
+                          <Form.Item label="AWB">
+                            <Input
+                              size="large"
+                              id="awb"
+                              name="awb"
+                              placeholder="Enter AWB"
+                              value={values.awb}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.awb && errors.awb && (
+                              <Text type="danger">{errors.awb}</Text>
+                            )}
+                          </Form.Item>
+                        </div>
+
+                        <div className="col-lg-6">
+                          <Form.Item label="Flight Number">
+                            <Input
+                              size="large"
+                              id="flight_number"
+                              name="flight_number"
+                              placeholder="Enter Flight Number"
+                              value={values.flight_number}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.flight_number && errors.flight_number && (
+                              <Text type="danger">{errors.flight_number}</Text>
+                            )}
+                          </Form.Item>
+                        </div>
+
+                        <div className="col-lg-6">
+                          <Form.Item label="Cargo Terminal">
+                            <Input
+                              size="large"
+                              id="cargo_terminal"
+                              name="cargo_terminal"
+                              placeholder="Enter Cargo Terminal"
+                              value={values.cargo_terminal}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.cargo_terminal &&
+                              errors.cargo_terminal && (
+                                <Text type="danger">
+                                  {errors.cargo_terminal}
+                                </Text>
+                              )}
+                          </Form.Item>
+                        </div>
+
+                        <div className="col-lg-6">
+                          <Form.Item label="Handling Code">
+                            <Input
+                              size="large"
+                              id="handling_code"
+                              name="handling_code"
+                              placeholder="Enter Handling Code"
+                              value={values.handling_code}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.handling_code && errors.handling_code && (
+                              <Text type="danger">{errors.handling_code}</Text>
+                            )}
+                          </Form.Item>
+                        </div>
+
+                        <div className="col-lg-6">
+                          <Form.Item label="ULD No">
+                            <Input
+                              size="large"
+                              id="uld_no"
+                              name="uld_no"
+                              placeholder="Enter ULD Number"
+                              value={values.uld_no}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.uld_no && errors.uld_no && (
+                              <Text type="danger">{errors.uld_no}</Text>
+                            )}
+                          </Form.Item>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {values.transport_mode === "SEA" && (
+                    <>
+                      <p className="form-sub-divider">
+                        <IoInformationCircleOutline /> Sea Freight Specific
+                      </p>
+                      <Row gutter={[16, 16]}>
+                        <Col span={12}>
+                          <Form.Item label="BOL">
+                            <Input
+                              size="large"
+                              id="bol"
+                              name="bol"
+                              placeholder="Enter BOL"
+                              value={values.bol}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.bol && errors.bol && (
+                              <Text type="danger">{errors.bol}</Text>
+                            )}
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item label="Vessel Name">
+                            <Input
+                              size="large"
+                              id="vessel_name"
+                              name="vessel_name"
+                              placeholder="Enter Vessel Name"
+                              value={values.vessel_name}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.vessel_name && errors.vessel_name && (
+                              <Text type="danger">{errors.vessel_name}</Text>
+                            )}
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item label="Voyage Number">
+                            <Input
+                              size="large"
+                              id="voyage_number"
+                              name="voyage_number"
+                              placeholder="Enter Voyage Number"
+                              value={values.voyage_number}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.voyage_number && errors.voyage_number && (
+                              <Text type="danger">{errors.voyage_number}</Text>
+                            )}
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item label="Container Number">
+                            <Input
+                              size="large"
+                              id="container_number"
+                              name="container_number"
+                              placeholder="Enter Container Number"
+                              value={values.container_number}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.container_number &&
+                              errors.container_number && (
+                                <Text type="danger">
+                                  {errors.container_number}
+                                </Text>
+                              )}
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item label="Container Type">
+                            <Select
+                              size="large"
+                              id="container_type"
+                              name="container_type"
+                              value={values.container_type}
+                              onChange={(value) =>
+                                setFieldValue("container_type", value)
+                              }
+                              onBlur={handleBlur}
+                            >
+                              <Select.Option value="">
+                                Select Container Type
+                              </Select.Option>
+                              <Select.Option value="20ft">20ft</Select.Option>
+                              <Select.Option value="40ft">40ft</Select.Option>
+                              <Select.Option value="45ft">45ft</Select.Option>
+                            </Select>
+                            {touched.container_type &&
+                              errors.container_type && (
+                                <Text type="danger">
+                                  {errors.container_type}
+                                </Text>
+                              )}
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </>
+                  )}
+
+                  {values.transport_mode === "LAND" && (
+                    <>
+                      <p className="form-sub-divider">
+                        <IoInformationCircleOutline /> Land Freight Specific
+                      </p>
+
+                      <Row gutter={[16, 16]}>
+                        <Col span={12}>
+                          <Form.Item label="BOL Land">
+                            <Input
+                              size="large"
+                              id="bol_land"
+                              name="bol_land"
+                              placeholder="Enter BOL Land"
+                              value={values.bol_land}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.bol_land && errors.bol_land && (
+                              <Text type="danger">{errors.bol_land}</Text>
+                            )}
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item label="Vehicle Number">
+                            <Input
+                              size="large"
+                              id="vehicle_number"
+                              name="vehicle_number"
+                              placeholder="Enter Vehicle Number"
+                              value={values.vehicle_number}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.vehicle_number &&
+                              errors.vehicle_number && (
+                                <Text type="danger">
+                                  {errors.vehicle_number}
+                                </Text>
+                              )}
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item label="Driver Info">
+                            <Input
+                              size="large"
+                              id="driver_info"
+                              name="driver_info"
+                              placeholder="Enter Driver Info"
+                              value={values.driver_info}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.driver_info && errors.driver_info && (
+                              <Text type="danger">{errors.driver_info}</Text>
+                            )}
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item label="Route">
+                            <Input
+                              size="large"
+                              id="route"
+                              name="route"
+                              placeholder="Enter Route"
+                              value={values.route}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.route && errors.route && (
+                              <Text type="danger">{errors.route}</Text>
+                            )}
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item label="Cargo Type">
+                            <Input
+                              size="large"
+                              id="cargo_type"
+                              name="cargo_type"
+                              placeholder="Enter Cargo Type"
+                              value={values.cargo_type}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.cargo_type && errors.cargo_type && (
+                              <Text type="danger">{errors.cargo_type}</Text>
+                            )}
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item label="Trailer Type">
+                            <Input
+                              size="large"
+                              id="trailer_type"
+                              name="trailer_type"
+                              placeholder="Enter Trailer Type"
+                              value={values.trailer_type}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.trailer_type && errors.trailer_type && (
+                              <Text type="danger">{errors.trailer_type}</Text>
+                            )}
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item label="Handling Info">
+                            <Input
+                              size="large"
+                              id="handling_info"
+                              name="handling_info"
+                              placeholder="Enter Handling Info"
+                              value={values.handling_info}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            {touched.handling_info && errors.handling_info && (
+                              <Text type="danger">{errors.handling_info}</Text>
+                            )}
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </>
+                  )}
                 </Row>
 
                 
-              </Panel>
-            </Collapse>
 
-            <Collapse defaultActiveKey={["2"]} className="mt-3">
-              <Panel header="ADDITIONAL INFORMATION" key="2">
-                <Row gutter={16}>
-                  {/* Customs and Financial Values */}
-                  <Col xl={8}>
-                    <Form.Item
-                      label="Customs Value"
-                      name="customs_value"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Customs value is required",
-                        },
-                      ]}
-                    >
-                      <Input
-                        type="number"
-                        placeholder="Enter customs value"
-                        min={0}
+                <Tabs
+                  defaultActiveKey="1"
+                  type="card"
+                  style={{ justifyContent: "space-between" }}
+                  tabBarClassName="custom-tab-bar"
+                >
+                  <TabPane tab="Additional Information" key="1">
+                    <Alert
+                      message="Please save the shipment in order to proceed further"
+                      type="warning"
+                      showIcon
+                    />
+                  </TabPane>
+
+                  {type !== "Booking" && (
+                    <>
+                      <TabPane tab="Transportation" key="2">
+                        <Alert
+                          message="Please save the shipment in order to proceed further"
+                          type="warning"
+                          showIcon
+                        />
+                      </TabPane>
+
+                      <TabPane tab="Waybill" key="3">
+                        <Alert
+                          message="Please save the shipment in order to proceed further"
+                          type="warning"
+                          showIcon
+                        />
+                      </TabPane>
+                    </>
+                  )}
+                  {type !== "Master" && (
+                    <TabPane tab="Packages" key="4">
+                      <Alert
+                        message="Please save the shipment in order to proceed further"
+                        type="warning"
+                        showIcon
                       />
-                    </Form.Item>
-                    <Form.Item
-                      label="Freight Value"
-                      name="freight_value"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Freight value is required",
-                        },
-                      ]}
-                    >
-                      <Input
-                        type="number"
-                        placeholder="Enter freight value"
-                        min={0}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      label="Insurance Value"
-                      name="insurance_value"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Insurance value is required",
-                        },
-                      ]}
-                    >
-                      <Input
-                        type="number"
-                        placeholder="Enter insurance value"
-                        min={0}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      label="Invoice Value"
-                      name="invoice_value"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Invoice value is required",
-                        },
-                      ]}
-                    >
-                      <Input
-                        type="number"
-                        placeholder="Enter invoice value"
-                        min={0}
-                      />
-                    </Form.Item>
-                  </Col>
+                    </TabPane>
+                  )}
 
-                  {/* Switches */}
-                  <Col xl={8}>
-                    <Form.Item
-                      label="Invoice"
-                      name="invoices"
-                      valuePropName="checked"
-                    >
-                      <Switch />
-                    </Form.Item>
-                    <Form.Item
-                      label="Is Dangerous Good"
-                      name="is_dangerous_good"
-                      valuePropName="checked"
-                    >
-                      <Switch />
-                    </Form.Item>
-                    <Form.Item
-                      label="Damaged Goods"
-                      name="is_damaged_goods"
-                      valuePropName="checked"
-                    >
-                      <Switch />
-                    </Form.Item>
-                    <Form.Item
-                      label="Packing List"
-                      name="packing_list"
-                      valuePropName="checked"
-                    >
-                      <Switch />
-                    </Form.Item>
-                  </Col>
-
-                  {/* Conditional Fields */}
-                  <Col xl={8}>
-                    <Form.Item
-                      noStyle
-                      shouldUpdate={(prev, cur) =>
-                        prev.is_dangerous_good !== cur.is_dangerous_good
-                      }
-                    >
-                      {({ getFieldValue }) =>
-                        getFieldValue("is_dangerous_good") ? (
-                          <Form.Item
-                            label="IMO Number"
-                            name="imo_number"
-                            rules={[
-                              {
-                                required: true,
-                                message:
-                                  "IMO number is required for dangerous goods",
-                              },
-                            ]}
-                          >
-                            <Input placeholder="Enter IMO number" />
-                          </Form.Item>
-                        ) : null
-                      }
-                    </Form.Item>
-
-                    <Form.Item
-                      label="Final Address"
-                      name="final_address"
-                      rules={[
-                        { required: true, message: "Address is required" },
-                      ]}
-                    >
-                      <Input placeholder="Enter final address" />
-                    </Form.Item>
-                    <Form.Item
-                      label="Delivery Type"
-                      name="delivery_type"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Delivery type is required",
-                        },
-                      ]}
-                    >
-                      <Select placeholder="Select delivery type">
-                        <Select.Option value="standard">Standard</Select.Option>
-                        <Select.Option value="express">Express</Select.Option>
-                        <Select.Option value="pickup">Pickup</Select.Option>
-                      </Select>
-                    </Form.Item>
-                    <Form.Item
-                      label="Document Reference Type"
-                      name="doc_ref_type"
-                    >
-                      <Input placeholder="Enter document reference type" />
-                    </Form.Item>
-                    <Form.Item label="Declaration Number" name="declaration_no">
-                      <Input placeholder="Enter declaration number" />
-                    </Form.Item>
-                    <Form.Item label="Order Number" name="order_no">
-                      <Input placeholder="Enter order number" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-
-                {/* Submit Button */}
-                <Row justify="end" className="mt-3">
-                  <Col>
-                    <Button type="primary" htmlType="submit">
-                      Submit
-                    </Button>
-                  </Col>
-                </Row>
+                  <TabPane tab="Charges" key="5">
+                    <Alert
+                      message="Please save the shipment in order to proceed further"
+                      type="warning"
+                      showIcon
+                    />
+                  </TabPane>
+                  <TabPane tab="Documents" key="6">
+                    <Alert
+                      message="Please save the shipment in order to proceed further"
+                      type="warning"
+                      showIcon
+                    />
+                  </TabPane>
+                </Tabs>
               </Panel>
             </Collapse>
           </Form>

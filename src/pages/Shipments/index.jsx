@@ -1,5 +1,5 @@
+import React, { useState,useEffect } from "react";
 import "ag-grid-enterprise";
-
 import {
   Typography,
   Row,
@@ -10,26 +10,25 @@ import {
   Dropdown,
   Input,
   Menu,
-} from "antd"; // Fixed the import for Breadcrumb
+} from "antd";
 import { MdOutlineAirplanemodeActive } from "react-icons/md";
 import { LiaShippingFastSolid } from "react-icons/lia";
 import useFetchApiData from "../../helper/other/fetchData";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community";
-import { themeAlpine } from "ag-grid-community";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-material.css";
+import { GiCargoShip } from "react-icons/gi";
 import { ClientSideRowModelModule } from "ag-grid-enterprise";
-import { EditOutlined, CopyOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import ShipmentActions from "./ShipmentComponents/ShipmentListActions";
 
 const { Title } = Typography;
+
 const getTransportModeIcon = (mode) => {
   switch (mode) {
     case "AIR":
-      return (
-        <>
-          <MdOutlineAirplanemodeActive size={20} />
-        </>
-      );
+      return <MdOutlineAirplanemodeActive size={20} />;
     case "SEA":
       return <GiCargoShip style={{ fontSize: "20px" }} />;
     case "LAND":
@@ -38,10 +37,9 @@ const getTransportModeIcon = (mode) => {
       return null;
   }
 };
+
 function formatBeautifulDate(dateString) {
   const date = new Date(dateString);
-
-  // Formatting the date as MM/DD/YYYY
   return date.toLocaleDateString("en-US");
 }
 
@@ -49,31 +47,42 @@ export default function Shipments() {
   document.title = `${
     import.meta.env.VITE_APP_APPLICATION_NAME
   } - All Shipments`;
-  const data = useFetchApiData("/shipments/shipments/");
-  console.log(data);
+
+  const rawData = useFetchApiData("/shipments/shipments/");
+  const [filteredData, setFilteredData] = useState([]);
+
+  // Update filtered data when rawData changes
+  useEffect(() => {
+    setFilteredData(rawData);
+  }, [rawData]);
+
+  const handleSearch = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    const filtered = rawData.filter(
+      (item) =>
+        item.transport_mode.toLowerCase().includes(searchValue) ||
+        item.shipment_type.toLowerCase().includes(searchValue) ||
+        item.shipment_no.toLowerCase().includes(searchValue) ||
+        item.shipment_status.toLowerCase().includes(searchValue) ||
+        item.port_origin_details?.name?.toLowerCase().includes(searchValue) ||
+        item.port_destination_details?.name?.toLowerCase().includes(searchValue) ||
+        item.port_handling_agent_origin_details?.name
+          ?.toLowerCase()
+          .includes(searchValue) ||
+        item.port_handling_agent_destination_details?.name
+          ?.toLowerCase()
+          .includes(searchValue)
+    );
+    setFilteredData(filtered);
+  };
+
   const columns = [
     {
-      headerName: "Actions",
-      field: "actions",
-      flex: 2,
-      minWidth: 120,
-      maxWidth: 120,
-      pinned: "left",
+      headerName:"Actions",
+      suppressMenu: true,  
+      width:'100',
       cellRenderer: (params) => (
-        <>
-          <Button
-            type="link"
-            icon={<EditOutlined style={{ fontSize: "18px" }} />}
-            onClick={() => handleEdit(params.data.id)}
-            style={{ padding: 0 }}
-          ></Button>
-          <Button
-            type="link"
-            icon={<CopyOutlined style={{ fontSize: "18px" }} />}
-            onClick={() => handleDelete(params.data.id)}
-            style={{ padding: 0 }}
-          ></Button>
-        </>
+        <ShipmentActions shipment_type={params.data.shipment_type} shipment_data={params.data} />
       ),
     },
     {
@@ -84,9 +93,9 @@ export default function Shipments() {
       checkboxSelection: true,
       headerCheckboxSelection: true,
       flex: 1,
-      minWidth: 100,
-      maxWidth: 100,
-      cellRenderer: (params) => getTransportModeIcon(params.value), // Show icon based on transport mode
+      minWidth: 150,
+      maxWidth: 150,
+      cellRenderer: (params) => getTransportModeIcon(params.value),
     },
     {
       headerName: "Shipping Type",
@@ -102,6 +111,11 @@ export default function Shipments() {
       field: "shipment_no",
       sortable: true,
       filter: true,
+      cellRenderer: (params) => (
+        <Link to={`/operations/shipments/details/${params.data.id}`}>
+          {params.data.shipment_no}
+        </Link>
+      ),
       flex: 2,
       minWidth: 230,
       maxWidth: 230,
@@ -114,13 +128,6 @@ export default function Shipments() {
       flex: 2,
       minWidth: 150,
       maxWidth: 150,
-      cellRenderer: (params) => (
-        <>
-          <Link to={`/operations/shipments/details/${params.data.id}`}>
-            {params.data.shipment_status}
-          </Link>
-        </>
-      ),
     },
     {
       headerName: "Origin",
@@ -168,6 +175,7 @@ export default function Shipments() {
       maxWidth: 150,
       cellRenderer: (params) => <>{formatBeautifulDate(params.data.created)}</>,
     },
+
   ];
 
   const menu = (
@@ -183,18 +191,42 @@ export default function Shipments() {
       </Menu.Item>
     </Menu>
   );
+
   return (
     <>
-      <Row justify="space-between">
-        <Title level={3}>Shipments</Title>
-        <Breadcrumb>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>Shipments</Breadcrumb.Item>
+      <Row
+        justify="space-between"
+        align="middle"
+        wrap
+        style={{
+          background: "#fafafa",
+          borderBottom: "1px solid #d9d9d9",
+          padding: "15px 25px",
+        }}
+      >
+        <Title level={4} style={{ margin: 0 }}>
+          Shipments
+        </Title>
+
+        <Breadcrumb separator="-">
+          <Breadcrumb.Item>Application</Breadcrumb.Item>
+          <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
         </Breadcrumb>
       </Row>
-      <Row gutter={16}>
+      <Row
+        gutter={16}
+        style={{
+          background: "#fafafa",
+          borderBottom: "1px solid #d9d9d9",
+          padding: "15px",
+        }}
+      >
         <Col xl={20}>
-          <Input size="large" placeholder="Search for the shipments" />
+          <Input
+            size="large"
+            placeholder="Search for the shipments"
+            onChange={handleSearch}
+          />
         </Col>
         <Col xl={4}>
           <Dropdown overlay={menu} placement="bottomRight">
@@ -202,33 +234,30 @@ export default function Shipments() {
           </Dropdown>
         </Col>
       </Row>
-      <Row>
-        {data.length > 0 ? (
+      <Row justify="center" align="middle" style={{ height: "60vh" }} className="bg-light">
+        {filteredData.length > 0 ? (
           <div
             className="ag-theme-material"
             style={{ height: "300px", borderRadius: "0px", width: "100%" }}
           >
             <AgGridReact
-              theme={themeAlpine}
               columnDefs={columns}
-              rowData={data}
+              rowData={filteredData}
               domLayout="autoHeight"
               modules={[ClientSideRowModelModule]}
             />
           </div>
         ) : (
-           
-            <Empty
-              description="No Shipments"
-               
-              style={{
-                display: "flex",
-                flexDirection: "column", // Ensures vertical alignment of content
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            />
-      
+          <Empty
+            description="No Shipments"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              margin: "auto",
+            }}
+          />
         )}
       </Row>
     </>

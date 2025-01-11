@@ -31,3 +31,43 @@ font-family: 'Inter', sans-serif !important; /* Set Poppins as the default font 
   .search-input input:focus::placeholder {
     color: white;
   }
+
+  .ant-collapse{
+    border-radius: 3px;
+    border-color: #002c8c;
+  }
+
+  .ant-collapse-header{
+    background: #002c8c;
+    border-radius: 0px !important;
+    font-size: 18px;
+    color: white !important;
+    font-weight: 600;
+  }
+
+ 
+
+.custom-tab-bar .ant-tabs-tab {
+  font-size: 16px;  /* Set a font size for the tabs */
+}
+
+ .custom-tab-bar .ant-tabs-nav {
+  display: flex;
+  justify-content: space-between; /* Spread the tabs evenly */
+  width: 100%;
+}
+
+.ant-tabs-nav .ant-tabs-tab-active{
+  background-color: #002c8c !important;
+  color: white !important;
+}
+.ant-tabs-tab-btn,.ant-tabs-tab{
+  border-radius: 0px !important;
+  font-size: 18px;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+:where(.css-dev-only-do-not-override-77tu7h).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn{
+  color: white;
+}

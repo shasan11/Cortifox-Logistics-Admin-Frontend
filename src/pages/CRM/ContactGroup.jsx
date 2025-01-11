@@ -124,7 +124,7 @@ const ContactGroup = () => {
           (item) => item.id === params.data.under
         )[0];
         const result = matchedItem ? matchedItem.name : ""; // Check if matchedItem exists
-        console.log("ValueGetter Result for 'Under':", result); // Log the result
+        
         return result;
       },
       sortable: true,

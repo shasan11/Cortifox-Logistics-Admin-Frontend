@@ -7,7 +7,7 @@
 
  .form-sub-divider{
    color:#096dd9 ;
-   font-size: 16px;
+   font-size: 18px;
    font-weight: 600;
  }
 
@@ -16,7 +16,9 @@
    box-shadow: none !important;
  }
 
-
+.ant-switch{
+  border-radius: 100px !important;
+}
  body{
    background-color: "#f0f0f0";
  }
@@ -61,7 +63,7 @@
   margin-bottom: 20px;
 }
 
-input.ant-input {
+input.ant-input{
   border: 2px solid #ddd; /* Light grey border */
   border-radius: 5px;    /* Rounded corners */
   padding: 8px;          /* Inner spacing */
@@ -76,3 +78,12 @@ input.ant-input {
 .ag-header-cell-text{
   font-size: 16px !important;
 }
+
+.ant-select-selector{
+  border: 2px solid #ddd !important; /* Light grey border */
+  border-radius: 5px !important;    /* Rounded corners */
+  padding: 8px !important;          /* Inner spacing */
+  font-size: 14px !important;       /* Text size */
+}
+
+ 
