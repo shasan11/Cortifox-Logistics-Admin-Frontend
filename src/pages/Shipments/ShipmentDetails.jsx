@@ -205,7 +205,7 @@ const ShipmentDetails = () => {
                     message.error(error.message);
                   });
 
-                  fetchData();
+                  fetchdata();
                   
               }}
             >

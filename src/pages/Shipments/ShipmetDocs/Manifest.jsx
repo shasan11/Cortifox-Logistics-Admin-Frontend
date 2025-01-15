@@ -1,112 +1,209 @@
-import React from 'react';
-import jsPDF from 'jspdf';
+import React from "react";
+import { useRef } from "react";
+import { useReactToPrint } from "react-to-print";
+import Barcode from "react-barcode";
 
-const ShipmentManifest = ({ manifest }) => {
-  const printManifest = () => {
-    const section = document.getElementById('manifest');
-    const newWin = window.open('', '_blank');
-    newWin.document.write('<html><head><title>Print</title></head><body>');
-    newWin.document.write(section.innerHTML);
-    newWin.document.write('</body></html>');
-    newWin.document.close();
-    newWin.print();
-  };
+const ShipmentManifest = ({ shipmentData }) => {
+    const componentRef = useRef();
 
-  const saveManifestAsPDF = () => {
-    const doc = new jsPDF();
-    const section = document.getElementById('manifest');
-    doc.html(section, {
-      callback: function (doc) {
-        doc.save('Shipment_Manifest.pdf');
-      },
-      x: 10,
-      y: 10,
-    });
-  };
+    const handlePrint = () => {
+        const printContent = componentRef.current;
+        const windowPrint = window.open("", "PRINT", "height=600,width=800");
+        windowPrint.document.write(`
+            <html>
+                <head>
+                    <title>Shipment Manifest</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 20px;
+                            position: relative;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 20px;
+                        }
+                        th, td {
+                            border: 1px solid #000;
+                            padding: 8px;
+                            text-align: left;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                        }
+                        .barcode {
+                            margin-top: 20px;
+                            text-align: center;
+                        }
+                        .watermark {
+                            position: fixed;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            font-size: 5rem;
+                            color: rgba(0, 0, 0, 0.1);
+                            white-space: nowrap;
+                            pointer-events: none;
+                            z-index: -1;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="watermark">CONFIDENTIAL</div>
+                    ${printContent.innerHTML}
+                </body>
+            </html>
+        `);
+        windowPrint.document.close();
+        windowPrint.focus();
+        windowPrint.print();
+        windowPrint.close();
+    };
 
-  return (
-    <div id="manifest" style={{ margin: '20px', padding: '10px', border: '1px solid black', borderRadius: '5px' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Shipment Manifest</h1>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ borderBottom: '2px solid black' }}>
-            <th>ID</th>
-            <th>Transport Mode</th>
-            <th>Tracking Number</th>
-            <th>ETA</th>
-            <th>ETD</th>
-          </tr>
-        </thead>
-        <tbody>
-          {manifest.map((item) => (
-            <tr key={item.id} style={{ borderBottom: '1px solid gray' }}>
-              <td>{item.id}</td>
-              <td>{item.transport_mode}</td>
-              <td>{item.tracking_no}</td>
-              <td>{item.eta}</td>
-              <td>{item.etd}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        <button style={{ marginRight: '10px' }} onClick={printManifest}>Print Manifest</button>
-        <button onClick={saveManifestAsPDF}>Save Manifest as PDF</button>
-      </div>
-    </div>
-  );
+    return (
+        <div>
+            <div ref={componentRef} className="shipment-manifest">
+                <h1 style={{ textAlign: "center" }}>Shipment Manifest</h1>
+                <h2>Shipment No: {shipmentData.shipment_no}</h2>
+                <h3>SI No: {shipmentData.si_no}</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th colSpan="2">Client Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Name</td>
+                            <td>{shipmentData.client_details.name}</td>
+                        </tr>
+                        <tr>
+                            <td>Country</td>
+                            <td>{shipmentData.client_details.country}</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>{shipmentData.client_details.email}</td>
+                        </tr>
+                        <tr>
+                            <td>Phone</td>
+                            <td>{shipmentData.client_details.phone}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th colSpan="2">Consignee Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Name</td>
+                            <td>{shipmentData.consignee_details.consignor_name}</td>
+                        </tr>
+                        <tr>
+                            <td>Phone</td>
+                            <td>{shipmentData.consignee_details.consigner_phone}</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>{shipmentData.consignee_details.consigner_email}</td>
+                        </tr>
+                        <tr>
+                            <td>Address</td>
+                            <td>{shipmentData.consignee_details.address}</td>
+                        </tr>
+                        <tr>
+                            <td>Remarks</td>
+                            <td>{shipmentData.consignee_details.remarks}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th colSpan="2">Shipper Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Name</td>
+                            <td>{shipmentData.shipper_details.name}</td>
+                        </tr>
+                        <tr>
+                            <td>Country</td>
+                            <td>{shipmentData.shipper_details.country}</td>
+                        </tr>
+                        <tr>
+                            <td>Address</td>
+                            <td>{shipmentData.shipper_details.address}</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>{shipmentData.shipper_details.email}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Package</th>
+                            <th>Description</th>
+                            <th>Dimensions</th>
+                            <th>Weight</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {shipmentData.shipment_packages.map((pkg) => (
+                            <tr key={pkg.id}>
+                                <td>{pkg.shipment_package}</td>
+                                <td>{pkg.good_desc}</td>
+                                <td>{pkg.length}x{pkg.width}x{pkg.height} {pkg.package_unit_display}</td>
+                                <td>{pkg.gross_weight} {pkg.mass_unit_display}</td>
+                                <td>{pkg.quantity}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Charge Name</th>
+                            <th>Type</th>
+                            <th>Rate</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {shipmentData.shipment_charges.map((charge) => (
+                            <tr key={charge.id}>
+                                <td>{charge.charge_name}</td>
+                                <td>{charge.charge_type}</td>
+                                <td>{charge.rate}</td>
+                                <td>{charge.qty}</td>
+                                <td>{charge.total}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                <div className="barcode">
+                    <Barcode value={shipmentData.shipment_no} />
+                </div>
+            </div>
+
+            <button onClick={handlePrint} className="print-button">Print / Save as PDF</button>
+        </div>
+    );
 };
 
-const ShipmentDetails = ({ details }) => {
-  const printDetails = () => {
-    const section = document.getElementById('details');
-    const newWin = window.open('', '_blank');
-    newWin.document.write('<html><head><title>Print</title></head><body>');
-    newWin.document.write(section.innerHTML);
-    newWin.document.write('</body></html>');
-    newWin.document.close();
-    newWin.print();
-  };
-
-  const saveDetailsAsPDF = () => {
-    const doc = new jsPDF();
-    const section = document.getElementById('details');
-    doc.html(section, {
-      callback: function (doc) {
-        doc.save('Shipment_Details.pdf');
-      },
-      x: 10,
-      y: 10,
-    });
-  };
-
-  return (
-    <div id="details" style={{ margin: '20px', padding: '10px', border: '1px solid black', borderRadius: '5px' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Shipment Details</h1>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ borderBottom: '2px solid black' }}>
-            <th>Shipment No</th>
-            <th>Direction</th>
-            <th>Shipment Type</th>
-            <th>Priority</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{details.shipment_no}</td>
-            <td>{details.direction}</td>
-            <td>{details.shipment_type}</td>
-            <td>{details.priority}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        <button style={{ marginRight: '10px' }} onClick={printDetails}>Print Details</button>
-        <button onClick={saveDetailsAsPDF}>Save Details as PDF</button>
-      </div>
-    </div>
-  );
-};
-
-export { ShipmentManifest, ShipmentDetails };
+export default ShipmentManifest;

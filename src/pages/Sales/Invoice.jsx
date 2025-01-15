@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import {
   Modal,
@@ -22,35 +22,87 @@ import Payment from "./CustomerPayment";
 const { Option } = Select;
 const { Text } = Typography;
 
+ 
+// Validation schema using Yup
+const InvoiceValidationSchema = Yup.object().shape({
+  invoice_number: Yup.string().required("Invoice number is required"),
+  discount_amount: Yup.number(),
+  total_amount: Yup.number().required("Total amount is required"),
+  created_date_editable: Yup.string().nullable(),
+  client: Yup.string().nullable().required("Client is required"),
+  currency: Yup.string().nullable().required("Currency is required"),
+  shipment_job: Yup.array().min(1, "At least one shipment job is required"),
+});
 
+const Invoice = ({shipmentsDatasArray,ui_type}) => {
+  const clients = useFetchApiData("/clients/clients/");
+  const currencies = useFetchApiData("general-accounting/currency/");
+  const shipmentJobs = useFetchApiData("/shipments/shipments/");
+  const forTitle = "Invoices";
+  const endpoint = "/sales/invoices/";
+  const modalTitle = "Invoice Form";
+  const initialFormValues = {
+    invoice_number: "",
 
+    discount_amount: null,
+    total_amount: null,
 
+    created_date_editable: null,
+    client: null,
+    currency: null,
+    shipment_job: shipmentsDatasArray||[],
+  };
 
-const InvoiceFormModal = ({ visible, onCancel, formik, modalTitle }) => {
+  const tableColumns = [
+    {
+      headerName: "Invoice Number",
+      field: "invoice_number",
+      sortable: true,
+      filter: true,
+      flex: 2,
+    },
+    {
+      headerName: "Status",
+      field: "status",
+      sortable: true,
+      filter: true,
+      flex: 2,
+    },
+    {
+      headerName: "Client",
+      field: "client",
+      valueGetter: (params) => {
+        const client = clients.find((c) => c.id === params.data.client);
+        return client ? client.name : "";
+      },
+      sortable: true,
+      filter: true,
+      flex: 2,
+    },
+  ];
+
+  const InvoiceFormModal = ({ visible, onCancel, formik, modalTitle }) => {
     const clients = useFetchApiData("/clients/clients/"); // Fetch clients
     const currencies = useFetchApiData("/general-accounting/currency/"); // Fetch currencies
     const shipmentJobs = useFetchApiData("/shipments/shipments/"); // Fetch shipment jobs
   
     const getShipmentData = (id) => {
-        return shipmentJobs.find((item) => item.id === id) || {};
-      };
-    
-      useEffect(() => {
-        // Compute total whenever `shipment_job` or `discount_amount` changes
-        const shipmentTotal =
-          formik.values.shipment_job?.reduce((sum, jobId) => {
-            const shipment = getShipmentData(jobId);
-            return sum + (shipment.total_amount || 0);
-          }, 0) || 0;
-    
-        const discount = parseFloat(formik.values.discount_amount || 0);
-        const newTotal = shipmentTotal - discount;
-    
-        formik.setFieldValue("total_amount", newTotal >= 0 ? newTotal : 0);
-      }, [formik.values.shipment_job, formik.values.discount_amount, shipmentJobs]);
-    
-
- 
+      return shipmentJobs.find((item) => item.id === id) || {};
+    };
+  
+    useEffect(() => {
+      // Compute total whenever `shipment_job` or `discount_amount` changes
+      const shipmentTotal =
+        formik.values.shipment_job?.reduce((sum, jobId) => {
+          const shipment = getShipmentData(jobId);
+          return sum + (shipment.total_amount || 0);
+        }, 0) || 0;
+  
+      const discount = parseFloat(formik.values.discount_amount || 0);
+      const newTotal = shipmentTotal - discount;
+  
+      formik.setFieldValue("total_amount", newTotal >= 0 ? newTotal : 0);
+    }, [formik.values.shipment_job, formik.values.discount_amount, shipmentJobs]);
   
     return (
       <Modal
@@ -229,30 +281,27 @@ const InvoiceFormModal = ({ visible, onCancel, formik, modalTitle }) => {
               </Row>
               <Row>
                 <Col xs={24}>
-                {formik.values.id&&(
-                  <Payment invoice_id={formik.values.id}/>
-                )}
-                </Col>              
+                  {formik.values.id && <Payment invoice_id={formik.values.id} />}
+                </Col>
               </Row>
             </div>
   
             {/* Shipment Table */}
             <div className="col-lg-6">
-            <InvoiceComponent
-  shipmentJobs={formik.values.shipment_job || []}
-  getShipmentData={getShipmentData}
-  total={formik.values.total_amount}
-  discountPercent={formik.values.discount_amount}
-  companyName="Quest Provider"
-  companyAddress="27 Provider Rd, Nashville, Tennessee, 37211, US"
-  contactInfo="Phone: 000-000-0000 | Email: support@questprovider.com"
-  recipientName="Bob Jones"
-  recipientAddress="1 Trims Way, Nashville, Tennessee, 37215"
-  invoiceNumber="1052"
-  issueDate="2025-01-10"
-  dueDate="2025-01-20"
-/>
-
+              <InvoiceComponent
+                shipmentJobs={formik.values.shipment_job || []}
+                getShipmentData={getShipmentData}
+                total={formik.values.total_amount}
+                discountPercent={formik.values.discount_amount}
+                companyName="Quest Provider"
+                companyAddress="27 Provider Rd, Nashville, Tennessee, 37211, US"
+                contactInfo="Phone: 000-000-0000 | Email: support@questprovider.com"
+                recipientName="Bob Jones"
+                recipientAddress="1 Trims Way, Nashville, Tennessee, 37215"
+                invoiceNumber="1052"
+                issueDate="2025-01-10"
+                dueDate="2025-01-20"
+              />
             </div>
           </div>
         </Form>
@@ -261,65 +310,6 @@ const InvoiceFormModal = ({ visible, onCancel, formik, modalTitle }) => {
   };
   
 
-// Validation schema using Yup
-const InvoiceValidationSchema = Yup.object().shape({
-  invoice_number: Yup.string().required("Invoice number is required"),
-   discount_amount: Yup.number(),
-  total_amount: Yup.number().required("Total amount is required"),
-   created_date_editable: Yup.string().nullable(),
-  client: Yup.string().nullable().required("Client is required"),
-  currency: Yup.string().nullable().required("Currency is required"),
-  shipment_job: Yup.array().min(1, "At least one shipment job is required"),
-});
-
-const Invoice = () => {
-  const clients = useFetchApiData("/clients/clients/");
-  const currencies = useFetchApiData("general-accounting/currency/");
-  const shipmentJobs = useFetchApiData("/shipments/shipments/");
-  const forTitle = "Invoices";
-  const endpoint = "/sales/invoices/";
-  const modalTitle = "Invoice Form";
-  const initialFormValues = {
-    invoice_number: "",
-   
-    discount_amount: null,
-    total_amount: null,
-     
-    
-    created_date_editable: null,
-    client: null,
-    currency: null,
-    shipment_job: [],
-  };
-
-  const tableColumns = [
-    {
-      headerName: "Invoice Number",
-      field: "invoice_number",
-      sortable: true,
-      filter: true,
-      flex: 2,
-    },
-    {
-      headerName: "Status",
-      field: "status",
-      sortable: true,
-      filter: true,
-      flex: 2,
-    },
-    {
-      headerName: "Client",
-      field: "client",
-      valueGetter: (params) => {
-        const client = clients.find((c) => c.id === params.data.client);
-        return client ? client.name : "";
-      },
-      sortable: true,
-      filter: true,
-      flex: 2,
-    },
-  ];
-
   return (
     <SingleTonCrud
       forTitle={forTitle}
@@ -327,6 +317,7 @@ const Invoice = () => {
       modalTitle={modalTitle}
       columnDefs={tableColumns}
       formModal={InvoiceFormModal}
+      render_type={ui_type}
       validationSchema={InvoiceValidationSchema}
       initialFormValues={initialFormValues}
     />

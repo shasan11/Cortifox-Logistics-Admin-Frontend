@@ -7,12 +7,13 @@ import {
 } from "@ant-design/icons";
 import PackagingList from "../ShipmetDocs/PackagingList";
 import BillOfLading from "../ShipmetDocs/BL";
+import ShipmentManifest from "../ShipmetDocs/Manifest";
 
 const { Title, Text } = Typography;
 import { MdOutlineAirplanemodeActive } from "react-icons/md";
 import { LiaShippingFastSolid } from "react-icons/lia";
 import { GiCargoShip } from "react-icons/gi";
-import useFetchApiData from "../../../helper/other/fetchData";
+ import ShipmentDetails from "../ShipmetDocs/ShipmentDetails";
 
 const getTransportModeIcon = (mode) => {
   switch (mode) {
@@ -34,6 +35,8 @@ const ShipmentInfo = ({ data }) => {
     component: <></>,
   });
 
+  console.log("Shipment Info",data)
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -53,16 +56,18 @@ const ShipmentInfo = ({ data }) => {
     });
     showModal();
   }
-
+ 
    
   const menu = (
     <Menu>
-      <Menu.Item key="1" onClick={() => { if (data) { handleModalOperations(PackagingList,"Packaging List", data); } }} >
-        Generate Packaging List
+      <Menu.Item key="6" onClick={() => { if (data) { handleModalOperations(PackagingList,"Packaging List", data); } }} >
+        Packaging List
       </Menu.Item>
-      <Menu.Item  key="1" onClick={() => { if (data) { handleModalOperations(BillOfLading,"Bill of Landing", data); } }}>Generate Bill of Landing</Menu.Item>
-      <Menu.Item key="3">Action 3</Menu.Item>
-    </Menu>
+      <Menu.Item  key="1" onClick={() => { if (data) { handleModalOperations(BillOfLading,"Bill of Landing", data); } }}>Bill of Landing</Menu.Item>
+      <Menu.Item key="3" onClick={() => { if (data) { handleModalOperations(ShipmentDetails,"Shipment Details", data); } }}>Shipment Details</Menu.Item>
+      <Menu.Item key="4" onClick={() => { if (data) { handleModalOperations(ShipmentManifest,"Shipment Manifest", data); } }}>Shipment Manifest</Menu.Item>
+      <Menu.Item key="5">Invoice</Menu.Item>
+     </Menu>
   );
 
   return (
@@ -140,12 +145,12 @@ const ShipmentInfo = ({ data }) => {
         <Col xs={12} sm={6}>
           <Text strong>SHIPPER NAME</Text>
           <br />
-          <Text style={{ fontSize: "18px" }}>{data.shipper}</Text>
+          <Text style={{ fontSize: "18px" }}>{data?.shipper.name || ""}</Text>
         </Col>
         <Col xs={12} sm={6}>
           <Text strong>CUSTOMER NAME</Text>
           <br />
-          <Text style={{ fontSize: "18px" }}>{data.client}</Text>
+          <Text style={{ fontSize: "18px" }}>{data.consignee.consignor_name || ""}</Text>
         </Col>
         <Col xs={12} sm={6}>
           <Text strong>LOAD TYPE</Text>
