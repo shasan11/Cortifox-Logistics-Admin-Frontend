@@ -5,10 +5,8 @@ import StaffRoutes from './StaffRoutes';
 import VendorRoutes from './VendorRoutes';
 import AccountsRoutes from './AccountsRoutes';
 import RiderRoutes from './RiderRoutes';
- 
+import { Spin } from 'antd'; // Import the Spin component
 
-
- 
 const UserGroup = () => {
   const [userGroup, setUserGroup] = useState(null);  // Initialize as null
   const { data: group, loading, error } = useUserGroup(); // Get group data, loading, and error states
@@ -22,7 +20,11 @@ const UserGroup = () => {
 
   // Loading and error states
   if (loading) {
-    return <p>Loading...</p>;  // Display a loading message while the data is being fetched
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Spin size="large" />  {/* Ant Design spinner in the center */}
+      </div>
+    );
   }
 
   if (error) {
@@ -33,15 +35,15 @@ const UserGroup = () => {
   const renderUserGroupComponent = (group) => {
     switch (group) {
       case 'Administrator':
-        return <AdminRoutes/>;
+        return <AdminRoutes />;
       case 'Staff':
-        return <StaffRoutes/>;
+        return <StaffRoutes />;
       case 'Vendor':
-        return <VendorRoutes/>;
+        return <VendorRoutes />;
       case 'Accounts':
-        return <AccountsRoutes/>;
+        return <AccountsRoutes />;
       case 'Rider':
-        return <RiderRoutes/>;
+        return <RiderRoutes />;
       default:
         return <p>Unauthorized or unknown user group.</p>; // Fallback for unknown or unauthorized groups
     }

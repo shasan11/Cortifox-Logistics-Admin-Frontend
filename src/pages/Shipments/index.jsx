@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "ag-grid-enterprise";
 import {
   Typography,
@@ -10,6 +10,7 @@ import {
   Dropdown,
   Input,
   Menu,
+  Spin,  // Import Spin component for loading
 } from "antd";
 import { MdOutlineAirplanemodeActive } from "react-icons/md";
 import { LiaShippingFastSolid } from "react-icons/lia";
@@ -50,10 +51,14 @@ export default function Shipments() {
 
   const rawData = useFetchApiData("/shipments/shipments/");
   const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(true); // Initialize loading state
 
   // Update filtered data when rawData changes
   useEffect(() => {
-    setFilteredData(rawData);
+    if (rawData) {
+      setFilteredData(rawData);
+      setLoading(false); // Set loading to false after data is fetched
+    }
   }, [rawData]);
 
   const handleSearch = (e) => {
@@ -175,7 +180,6 @@ export default function Shipments() {
       maxWidth: 150,
       cellRenderer: (params) => <>{formatBeautifulDate(params.data.created)}</>,
     },
-
   ];
 
   const menu = (
@@ -235,31 +239,38 @@ export default function Shipments() {
         </Col>
       </Row>
       <Row justify="center" align="middle" style={{ height: "60vh" }} className="bg-light">
-        {filteredData.length > 0 ? (
-          <div
-            className="ag-theme-material"
-            style={{ height: "300px", borderRadius: "0px", width: "100%" }}
-          >
-            <AgGridReact
-              columnDefs={columns}
-              rowData={filteredData}
-              domLayout="autoHeight"
-              modules={[ClientSideRowModelModule]}
-            />
-          </div>
-        ) : (
-          <Empty
-            description="No Shipments"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              margin: "auto",
-            }}
-          />
-        )}
-      </Row>
+  {loading ? (  // Show the loader while data is being fetched
+    <Spin size="large" tip="Loading..." style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }} />
+  ) : filteredData.length > 0 ? (
+    <div
+      className="ag-theme-material"
+      style={{ height: "300px", borderRadius: "0px", width: "100%" }}
+    >
+      <AgGridReact
+        columnDefs={columns}
+        rowData={filteredData}
+        domLayout="autoHeight"
+        modules={[ClientSideRowModelModule]}
+      />
+    </div>
+  ) : (
+    loading ? (
+      <Spin size="large" tip="Loading..." style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }} />
+    ) : (
+      <Empty
+        description="No Shipments"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          margin: "auto",
+        }}
+      />
+    )
+  )}
+</Row>
+
     </>
   );
 }

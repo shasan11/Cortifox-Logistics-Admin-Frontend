@@ -16,6 +16,7 @@ const CashTransferModel = ({ visible, onCancel, formik, modalTitle }) => {
   console.log("Bank Accounts",bank_account);
   return (
     <Drawer
+    width="85%"
       title={modalTitle}
       visible={visible}
       onClose={onCancel}

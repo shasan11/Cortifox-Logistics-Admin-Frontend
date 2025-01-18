@@ -145,12 +145,12 @@ const ShipmentInfo = ({ data }) => {
         <Col xs={12} sm={6}>
           <Text strong>SHIPPER NAME</Text>
           <br />
-          <Text style={{ fontSize: "18px" }}>{data?.shipper.name || ""}</Text>
+          <Text style={{ fontSize: "18px" }}>{data?.shipper?.name || ""}</Text>
         </Col>
         <Col xs={12} sm={6}>
           <Text strong>CUSTOMER NAME</Text>
           <br />
-          <Text style={{ fontSize: "18px" }}>{data.consignee.consignor_name || ""}</Text>
+          <Text style={{ fontSize: "18px" }}>{data.consignee?.consignor_name || ""}</Text>
         </Col>
         <Col xs={12} sm={6}>
           <Text strong>LOAD TYPE</Text>

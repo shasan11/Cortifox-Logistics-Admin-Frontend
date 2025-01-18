@@ -86,4 +86,10 @@ input.ant-input{
   font-size: 14px !important;       /* Text size */
 }
 
- 
+.ant-drawer-body{
+  width: 100% !important;
+}
+.ant-drawer-content-wrapper{
+  width: 100%;
+  max-width: 100%;
+}

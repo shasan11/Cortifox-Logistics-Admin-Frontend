@@ -53,6 +53,7 @@ import ContactGroup from "../pages/CRM/ContactGroup";
 
 
 import ExpenseForm from "../pages/Purchase/Expenses/AddExpenses";
+import ExpenseCategory from "../pages/Purchase/Expensecategory";
 
 //Master
 import MasterDataLinks from "../pages/Master/MasterData";
@@ -125,15 +126,11 @@ const items = [
    
   ]),
   getItem("Purchase", "sub4", <WalletOutlined />, [
-    getItem("Expenses", "19", null, null, "/expenses"),
+    getItem("Expense Cateory", "19", null, null, "/purchase/expense-category"),
     getItem("Vendor Bills", "20", null, null, "/vendor-bills"),
     getItem("Payment Out", "21", null, null, "/payment-out"),
   ]),
-  getItem("Tariff & Rates", "sub5", <PercentageOutlined />, [
-    getItem("General Charge Sheet", "22", null, null, "/charge-sheet"),
-    getItem("Freight Rate Manager", "23", null, null, "/freight-rate-manager"),
-    getItem("Local Port Charges", "24", null, null, "/port-charges"),
-  ]),
+ 
   getItem("CRM", "sub6", <TeamOutlined />, [
     getItem(
       "Contact Group",
@@ -221,6 +218,7 @@ const AdminRoutes = () => {
           background: "#030852",
           color: "white",
           display: "flex",
+          zIndex:1230,
           alignItems: "center",
           justifyContent: "space-between", // Ensures the elements are spread across the header
         }}
@@ -323,6 +321,8 @@ const AdminRoutes = () => {
           className="custom-sidebar"
           style={{
             background: "white",
+            zIndex:1230,
+            
           }}
         >
           <Menu
@@ -377,6 +377,7 @@ const AdminRoutes = () => {
 
 
               <Route path="/purchase/expenses/add/" element={<ExpenseForm/>}/>
+              <Route path="/purchase/expense-category" element={<ExpenseCategory/>}/>
 
               <Route path="/operations/shipments/" element={<Shipments />} />
               <Route

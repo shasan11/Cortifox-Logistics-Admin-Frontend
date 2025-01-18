@@ -4,6 +4,7 @@ import { Modal, Button, Input, Select, Form, Typography } from "antd";
 import { useFormik } from "formik";
 import SingleTonCrud from "../../components/SingletonCrud";
 import useFetchApiData from "../../helper/other/fetchData";
+import SinglePager from "../../components/SinglePager";
 const { Option } = Select;
 const { Text } = Typography;
 
@@ -11,7 +12,7 @@ const { Text } = Typography;
 const ContactGroupFormModal = ({ visible, onCancel, formik, modalTitle }) => {
   const parent = useFetchApiData("/crm/contacts-groups/");
   return (
-    <Modal
+    <SinglePager
       title={modalTitle}
       visible={visible}
       onCancel={onCancel}
@@ -83,7 +84,7 @@ const ContactGroupFormModal = ({ visible, onCancel, formik, modalTitle }) => {
           )}
         </Form.Item>
       </Form>
-    </Modal>
+    </SinglePager>
   );
 };
 

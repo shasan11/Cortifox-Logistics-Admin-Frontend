@@ -1,18 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Checkbox, Form, Input, Typography, notification, Card, Row, Col } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import "./Login.css"; // Assuming you've created the CSS file
+import "./Login.css";
 
 const { Text, Title, Link } = Typography;
 
 const Login = () => {
+  const [loading, setLoading] = useState(false); // State to manage the loading state
   const backend_url = import.meta.env.VITE_APP_BACKEND_URL;
 
   const validationSchema = Yup.object({
-    username: Yup.string().required("Username is required. "),
+    username: Yup.string().required("Username is required."),
     password: Yup.string()
       .min(6, "Password must be at least 6 characters")
       .required("Password is required"),
@@ -29,31 +30,18 @@ const Login = () => {
     <Row className="login-container">
       <Col xs={24} sm={20} md={12} lg={8}>
         <Card className="login-card" bordered={false}>
-          {/* Header Section */}
           <div className="login-header">
             <div className="login-logo">
-              <svg
-                width="25"
-                height="24"
-                viewBox="0 0 25 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect x="0.464294" width="24" height="24" rx="4.8" fill="#1890FF" />
-                <path d="M14.8643 3.6001H20.8643V9.6001H14.8643V3.6001Z" fill="white" />
-                <path d="M10.0643 9.6001H14.8643V14.4001H10.0643V9.6001Z" fill="white" />
-                <path d="M4.06427 13.2001H11.2643V20.4001H4.06427V13.2001Z" fill="white" />
-              </svg>
+              <img src="https://pashupaticargo.com/wp-content/uploads/2023/11/WhatsApp-Image-2024-12-12-at-11.51.08.jpeg" width={150} className="mb-3"/>
             </div>
             <Title level={3}>Welcome Back</Title>
-             
           </div>
 
-          {/* Form Section */}
           <Formik
             initialValues={{ username: "", password: "", remember: true }}
             validationSchema={validationSchema}
             onSubmit={(values) => {
+              setLoading(true); // Set loading to true on form submit
               axios
                 .post(`${backend_url}/auth/jwt/create`, values)
                 .then((response) => {
@@ -63,12 +51,14 @@ const Login = () => {
                 })
                 .catch(() => {
                   openNotification("error", "Incorrect username or password. Please try again.");
+                })
+                .finally(() => {
+                  setLoading(false); // Reset loading state after response
                 });
             }}
           >
             {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue }) => (
               <Form layout="vertical" onFinish={handleSubmit} requiredMark={false}>
-                {/* Username Field */}
                 <Form.Item
                   label="Username"
                   validateStatus={errors.username && touched.username ? "error" : ""}
@@ -77,7 +67,6 @@ const Login = () => {
                   <Input
                     prefix={<MailOutlined />}
                     size="large"
-                    required
                     placeholder="Please enter username"
                     name="username"
                     value={values.username}
@@ -86,11 +75,8 @@ const Login = () => {
                   />
                 </Form.Item>
 
-                {/* Password Field */}
                 <Form.Item
-                  style={{marginTop:'1px'}}
                   label="Password"
-                  required
                   validateStatus={errors.password && touched.password ? "error" : ""}
                   help={errors.password && touched.password ? errors.password : ""}
                 >
@@ -105,7 +91,6 @@ const Login = () => {
                   />
                 </Form.Item>
 
-                {/* Remember Me & Forgot Password */}
                 <div className="login-form-footer">
                   <Checkbox
                     checked={values.remember}
@@ -118,14 +103,18 @@ const Login = () => {
                   </Link>
                 </div>
 
-                {/* Submit Button */}
                 <Form.Item>
-                  <Button type="primary" block htmlType="submit" size="large">
+                  <Button
+                    type="primary"
+                    block
+                    htmlType="submit"
+                    size="large"
+                    loading={loading} // Use loading state for button
+                  >
                     Log in
                   </Button>
                 </Form.Item>
 
-                {/* Footer Section */}
                 <div className="login-footer">
                   <Text type="secondary">Don't have an account?</Text>{" "}
                   <Link href="#">Sign up now</Link>

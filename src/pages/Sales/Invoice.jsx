@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
+import SinglePager from "../../components/SinglePager";
 import {
   Modal,
   Button,
@@ -305,6 +306,7 @@ const Invoice = ({shipmentsDatasArray,ui_type}) => {
             </div>
           </div>
         </Form>
+       
       </Modal>
     );
   };
